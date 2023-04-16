@@ -103,7 +103,7 @@ namespace gsp {
 						bool canJoin = true;
 
 						for (size_t i = 0; i < seq1.size() - 1; ++i) {
-							if (seq1[i] != seq2[i]) {
+							if (seq1[i+1] != seq2[i]) {
 								canJoin = false;
 								break;
 							}

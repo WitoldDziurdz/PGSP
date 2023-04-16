@@ -48,6 +48,9 @@
     <ClCompile Include="Node.cpp">
       <Filter>Source Files\cpu</Filter>
     </ClCompile>
+    <ClCompile Include="GspEngineCpu.h">
+      <Filter>Header Files\cpu</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SyclQueue.h">

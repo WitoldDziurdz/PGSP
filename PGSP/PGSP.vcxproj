@@ -83,6 +83,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="GspEngineCpu.h" />
     <ClCompile Include="HashEngineCpu.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Node.cpp" />

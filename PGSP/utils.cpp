@@ -9,11 +9,12 @@ namespace gsp {
 	}
 
 	bool isContain(const std::string& item, const std::string& sub_item) {
-		if (item.size() < sub_item.size()) {
-			return false;
+		for (char c : sub_item) {
+			if (std::count(item.begin(), item.end(), c) < std::count(sub_item.begin(), sub_item.end(), c)) {
+				return false;
+			}
 		}
-		auto found = item.find(sub_item);
-		return found != std::string::npos;
+		return true;
 	}
 
 	bool isSubSequence(const std::vector<std::string>& seq, const std::vector<std::string>& sub_seq) {
@@ -30,7 +31,6 @@ namespace gsp {
 			}
 		}
 		return false;
-
 	}
 
 	std::set<char> gsp::getUniqItems(const std::vector<std::string>& sequence) {
@@ -72,7 +72,26 @@ namespace gsp {
 		return uniq_items;
 	}
 
+	void filter(std::map<gsp::item, size_t>& frequency, size_t min_support) {
+		std::erase_if(frequency, [min_support](const auto& item) {
+			auto const& [key, value] = item;
+			return value < min_support;
+		});
+	}
 
-
-
+	std::map<gsp::item, size_t> getFrequentItems(const std::vector<gsp::item>& data_base, std::vector<item>& candidates) {
+		std::map<gsp::item, size_t> frequent_elements;
+		if (candidates.empty()) {
+			return {};
+		}
+		size_t k = candidates.begin()->size();
+		for (const item& sub_seq : candidates) {
+			for (const item& seq : data_base) {
+				if (gsp::isSubSequence(seq, sub_seq)) {
+					++frequent_elements[sub_seq];
+				}
+			}
+		}
+		return frequent_elements;
+	}
 }
