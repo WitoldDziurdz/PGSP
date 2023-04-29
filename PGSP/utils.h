@@ -176,7 +176,7 @@ namespace gsp {
         const auto flat_item = flatItem(candidate);
         for (size_t i = 0; i < flat_item.size(); ++i) {
             std::string str = flat_item;
-            str.erase(i, i+1);
+            str.erase(i, 1);
             if (!frequent_items.count(str)) {
                 return false;
             }
@@ -190,10 +190,13 @@ namespace gsp {
         for (const auto& item : frequent_items) {
             flat_frequent_items.insert(flatItem(item.first));
         }
-
+        
         for (const auto& candidate : candidates) {
             if (isCanBeFrequent(flat_frequent_items, candidate)) {
                 results.push_back(candidate);
+            }
+            else {
+                size_t s = 0;
             }
         }
         return results;
