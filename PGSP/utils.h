@@ -7,6 +7,7 @@
 #include <sstream>
 #include <numeric>
 #include <iostream>
+#include <fstream>
 
 namespace gsp {
 
@@ -171,15 +172,78 @@ namespace gsp {
     std::map<gsp::item, size_t> getFrequentItems(const std::vector<gsp::item>& data_base, std::vector<item>& candidates);
     void filter(std::map<gsp::item, size_t>& frequency, size_t min_support);
 
+    inline bool isCanBeFrequent(const std::set<std::string>& frequent_items, const gsp::item& candidate) {
+        const auto flat_item = flatItem(candidate);
+        for (size_t i = 0; i < flat_item.size(); ++i) {
+            std::string str = flat_item;
+            str.erase(i, i+1);
+            if (!frequent_items.count(str)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    inline std::vector<gsp::item> prune(const std::map<gsp::item, size_t>& frequent_items, const std::vector <gsp::item>& candidates) {
+        std::vector<gsp::item> results;
+        std::set<std::string> flat_frequent_items;
+        for (const auto& item : frequent_items) {
+            flat_frequent_items.insert(flatItem(item.first));
+        }
+
+        for (const auto& candidate : candidates) {
+            if (isCanBeFrequent(flat_frequent_items, candidate)) {
+                results.push_back(candidate);
+            }
+        }
+        return results;
+    }
+
+    inline std::ostream& operator<<(std::ostream& os, const item& item) {
+        os << "[";
+        bool isFirst = true;
+        for (const auto& ev : item) {
+            if (!isFirst) {
+                os << ", ";
+            }
+            isFirst = false;
+            os << ev;
+        }
+        os << "]";
+        return os;
+    }
+
+    inline std::ostream& operator<<(std::ostream& os, const std::pair<gsp::item, size_t>& item) {
+        os << "{";
+        os << item.first << " : " << item.second;
+        os << "}";
+        return os;
+    }
+
+    inline std::ostream& operator<<(std::ostream& os, const std::vector<std::pair<gsp::item, size_t>>& items) {
+        for (const auto& item : items) {
+            os << item << std::endl;
+        }
+        return os;
+    }
+
 
     inline void print(const std::vector<std::pair<gsp::item, size_t>>& items) {
         std::cout << "-------------------------" << std::endl;
-        for (const auto& item : items) {
-            for (const auto& ev : item.first) {
-                std::cout << ev << " ";
-            }
-            std::cout << item.second << std::endl;
-        }
+        std::cout << items; 
         std::cout << "-------------------------" << std::endl;
+    }
+
+    inline void writeToFile(const std::vector<std::pair<gsp::item, size_t>>& items, std::string fileName) {
+        std::ofstream myfile(fileName);
+
+        if (myfile.is_open()) {
+            myfile << items;
+
+            myfile.close();
+        }
+        else {
+            std::cerr << "Error: Unable to open the file for writing." << std::endl;
+        }
     }
 }

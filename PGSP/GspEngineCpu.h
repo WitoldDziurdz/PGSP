@@ -18,15 +18,16 @@ namespace gsp {
 
 		void calculate() {
 
-			auto items1 = generate_size_1_candidates(data_base_);
-			auto frequent_items1 = getFrequentItems(data_base_, items1);
-			print(frequent_items1);
-			filter(frequent_items1, 2);
-			print(frequent_items1);
-			update(frequent_items1);
-
-			auto items = generate_size_2_candidates(frequent_items1);
+			auto items = generate_size_1_candidates(data_base_);
 			auto frequent_items = getFrequentItems(data_base_, items);
+			print(frequent_items);
+			filter(frequent_items, 2);
+			print(frequent_items);
+			update(frequent_items);
+
+			items = generate_size_2_candidates(frequent_items);
+			//items = prune(frequent_items1, items);
+			frequent_items = getFrequentItems(data_base_, items);
 			print(frequent_items);
 			filter(frequent_items, 2);
 			print(frequent_items);
@@ -35,7 +36,7 @@ namespace gsp {
 			size_t k = 3;
 			while (!frequent_items.empty()) {
 				items = generate_size_k_candidates(frequent_items, k);
-				print(items);
+				//items = prune(frequent_items, items);
 				frequent_items = getFrequentItems(data_base_, items);
 				print(frequent_items);
 				filter(frequent_items, 2);
