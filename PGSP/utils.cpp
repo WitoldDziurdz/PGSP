@@ -40,26 +40,20 @@ namespace gsp {
 		return result;
 	}
 
-	std::vector <std::vector<item>> split(const std::vector<item>& vec, size_t base) {
-		std::vector<std::vector<item>> outVec;
+    std::vector<std::vector<gsp::item>> split(std::vector<gsp::item> items, size_t num_of_work_group) {
+        if (num_of_work_group == 0) {
+            throw std::invalid_argument("Number of work groups must be greater than 0");
+        }
 
-		size_t length = vec.size() / base;
-		size_t remain = vec.size() % base;
+        std::vector<std::vector<gsp::item>> result(num_of_work_group);
 
-		size_t begin = 0;
-		size_t end = 0;
+        for (size_t i = 0; i < items.size(); ++i) {
+            size_t group_index = i % num_of_work_group;
+            result[group_index].push_back(std::move(items[i]));
+        }
 
-		for (size_t i = 0; i < std::min(base, vec.size()); ++i)
-		{
-			end += (remain > 0) ? (length + !!(remain--)) : length;
-
-			outVec.push_back(std::vector<item>(vec.begin() + begin, vec.begin() + end));
-
-			begin = end;
-		}
-
-		return outVec;
-	}
+        return result;
+    }
 
 	std::set<char> generateUniqItems(const std::vector<gsp::item>& data_base) {
 		std::set<char> uniq_items;

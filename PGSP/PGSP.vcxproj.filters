@@ -57,6 +57,12 @@
     <ClCompile Include="IEngine.h">
       <Filter>Header Files\cpu</Filter>
     </ClCompile>
+    <ClCompile Include="SimpleNode.h">
+      <Filter>Header Files\cpu</Filter>
+    </ClCompile>
+    <ClCompile Include="SPSPMEngineCpu.cpp">
+      <Filter>Source Files\cpu</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SyclQueue.h">

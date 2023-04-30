@@ -34,7 +34,7 @@ namespace gsp {
 			<< "\n";
 		std::set<char> uniq_items = generateUniqItems(data_base);
 
-		std::vector<std::vector<gsp::item>> client_data = gsp::split(data_base, num_of_work_group_);
+		std::vector<std::vector<gsp::item>> client_data;
 
 
 		std::vector<std::vector<gsp::item>> pipes;

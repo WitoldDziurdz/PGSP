@@ -1,8 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
-#include <set>
-#include <CL/sycl.hpp>
+#include <map>
 
 #include "utils.h"
 

@@ -1,12 +1,9 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <set>
-#include <thread>
+
 #include "utils.h"
 #include "HashNode.h"
-#include <iostream>
-
 #include "GspEngineCpu.h"
 
 namespace gsp {

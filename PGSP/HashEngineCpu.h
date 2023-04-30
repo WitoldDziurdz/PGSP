@@ -2,19 +2,13 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <set>
-#include <thread>
-#include <memory>
+#include <future>
+
 #include "utils.h"
 #include "HashNode.h"
 #include "IEngine.h"
-#include <iostream>
-#include <algorithm>
-#include <future>
 
 namespace gsp {
-
-
 	class HashEngineCpu : public IEngine{
 
 	public:

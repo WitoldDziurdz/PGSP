@@ -1,9 +1,8 @@
 #include "HashEngineCpu.h"
-#include <iostream>
 #include <vector>
 #include <string>
-#include <set>
-#include <queue>
+#include <map>
+
 #include "HashNode.h"
 
 namespace gsp {

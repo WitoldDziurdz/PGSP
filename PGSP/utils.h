@@ -18,7 +18,7 @@ namespace gsp {
 
     std::set<char> getUniqItems(const std::vector<std::string>& sequence);
 
-    std::vector <std::vector<item>> split(const std::vector<item>& vec, size_t base);
+    std::vector<std::vector<item>> split(std::vector<gsp::item> items, size_t num_of_work_group);
 
     std::set<char> generateUniqItems(const std::vector<gsp::item>& data_base);
 

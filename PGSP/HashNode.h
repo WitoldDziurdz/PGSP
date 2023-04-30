@@ -1,16 +1,9 @@
 #pragma once
 #include <string>
 #include <vector>
-#include <set>
-#include <numeric>
-#include <thread>
-#include <memory>
 #include <map>
-#include <algorithm>
 
-#include "queue.h"
 #include "utils.h"
-#include "DataBase.h"
 
 namespace gsp {
 

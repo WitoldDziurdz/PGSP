@@ -6,10 +6,9 @@
 
 #include "GspEngineCpu.h"
 #include "HashEngineCpu.h"
+#include "SPSPMEngineCpu.h"
 #include "utils.h"
 #include <CL/sycl.hpp>
-
-
 
 
 int main(int, char**) {
@@ -36,5 +35,10 @@ int main(int, char**) {
     hash_engine.calculate();
     auto hash_items = hash_engine.getItems();
     gsp::print(hash_items);
+
+    gsp::HashEngineCpu simple_engine(data_base, 2, 5);
+    simple_engine.calculate();
+    auto simple_items = simple_engine.getItems();
+    gsp::print(simple_items);
     return 0;
 }
