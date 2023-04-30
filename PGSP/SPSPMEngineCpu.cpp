@@ -37,13 +37,13 @@ namespace gsp {
         }
     }
 
-    std::map<gsp::item, size_t> SPSPMEngineCpu::calculateFrequentItemsAsync(std::vector<std::vector<gsp::item>>& items) {
-        std::vector<std::future<std::map<gsp::item, size_t>>> futures;
+   map_items SPSPMEngineCpu::calculateFrequentItemsAsync(std::vector<std::vector<gsp::item>>& items) {
+        std::vector<std::future<map_items>> futures;
         for (size_t i = 0; i < nodes_.size(); ++i) {
             futures.push_back(std::async(std::launch::async, &SimpleNode::calculateFrequentItems, std::ref(nodes_[i]), std::ref(items[i])));
         }
 
-        std::map<gsp::item, size_t> frequent_items;
+       map_items frequent_items;
         for (auto& future : futures) {
             auto fr_items = future.get();
             frequent_items.insert(fr_items.begin(), fr_items.end());

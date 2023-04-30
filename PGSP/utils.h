@@ -8,10 +8,24 @@
 #include <numeric>
 #include <iostream>
 #include <fstream>
+#include <unordered_map>
 
 namespace gsp {
 
+    struct VectorOfStringHash {
+        std::size_t operator()(const std::vector<std::string>& vec) const {
+            std::size_t seed = 0;
+            std::hash<std::string> hasher;
+            for (const auto& str : vec) {
+                seed ^= hasher(str) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+            }
+            return seed;
+        }
+    };
+
     using item = std::vector<std::string>;
+    using map_items = std::unordered_map<std::vector<std::string>, int, VectorOfStringHash>;
+
     bool isContain(const std::string& item, const std::string& sub_item);
 
     bool isSubSequence(const std::vector<std::string>& seq, const std::vector<std::string>& sub_seq);
@@ -22,21 +36,9 @@ namespace gsp {
 
     std::set<char> generateUniqItems(const std::vector<gsp::item>& data_base);
 
-    template<typename T>
-    std::vector<std::vector<T>> split(const std::vector<T>& input, size_t n) {
-        std::vector<std::vector<T>> result;
-
-        for (size_t i = 0; i < input.size(); i += n) {
-            std::vector<T> chunk(input.begin() + i, input.begin() + std::min(i + n, input.size()));
-            result.push_back(chunk);
-        }
-
-        return result;
-    }
-
     std::vector<gsp::item> generate_size_1_candidates(const std::vector<gsp::item>& database);
 
-    std::vector<gsp::item> generate_size_2_candidates(const std::map<gsp::item, size_t>& frequent_items);
+    std::vector<gsp::item> generate_size_2_candidates(const map_items& frequent_items);
 
     std::string flatItem(const gsp::item& element);
 
@@ -50,15 +52,15 @@ namespace gsp {
 
     size_t getSize(const gsp::item& item);
 
-    std::vector<gsp::item> generate_size_k_candidates(const std::map<gsp::item, size_t>& frequent_items, size_t k);
+    std::vector<gsp::item> generate_size_k_candidates(const map_items& frequent_items, size_t k);
 
-    void filter(std::map<gsp::item, size_t>& frequency, size_t min_support);
+    void filter(map_items& frequency, size_t min_support);
 
-    std::map<gsp::item, size_t> getFrequentItems(const std::vector<gsp::item>& data_base, std::vector<item>& candidates);
+    map_items getFrequentItems(const std::vector<gsp::item>& data_base, std::vector<item>& candidates);
 
     bool isCanBeFrequent(const std::set<std::string>& frequent_items, const gsp::item& candidate);
 
-    std::vector<gsp::item> prune(const std::map<gsp::item, size_t>& frequent_items, const std::vector <gsp::item>& candidates);
+    std::vector<gsp::item> prune(const map_items& frequent_items, const std::vector <gsp::item>& candidates);
 
     std::ostream& operator<<(std::ostream& os, const item& item);
 

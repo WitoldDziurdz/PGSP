@@ -21,7 +21,7 @@ namespace gsp {
 
         void calculate() override;
     private:
-        std::map<gsp::item, size_t> calculateFrequentItemsAsync(std::vector<std::vector<gsp::item>>& items);
+        map_items calculateFrequentItemsAsync(std::vector<std::vector<gsp::item>>& items);
         const size_t num_of_work_group_;
         std::vector<gsp::SimpleNode> nodes_;
     };

@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include <future>
 
 #include "utils.h"
@@ -18,13 +18,13 @@ namespace gsp {
 
     private:
         template<typename Func>
-        std::map<gsp::item, size_t> asyncIterateAndCollect(Func&& f) {
-            std::vector<std::future<std::map<gsp::item, size_t>>> futures;
+        map_items asyncIterateAndCollect(Func&& f) {
+            std::vector<std::future<map_items>> futures;
             for (auto& node : nodes_) {
                 futures.push_back(std::async(std::launch::async, f, std::ref(node)));
             }
 
-            std::map<gsp::item, size_t> collectedItems;
+           map_items collectedItems;
             for (auto& future : futures) {
                 auto fItem = future.get();
                 collectedItems.insert(fItem.begin(), fItem.end());

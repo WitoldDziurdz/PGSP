@@ -108,13 +108,3 @@ m,cixy,y,d,chovy,ors,afov
 hoq,xz,x,a,s,c,h,h,hmsxz,y
 o,x,x,h,os,l,v,a,r,loxy
 y,y,h,jmoxz,hjlos,chvy,o
-x,iovx,h,choz,dz
-foqx,h,x,x,v,o,xz,x
-x,oxy,bhox,hs,x,x,o,hsvx
-ho,h,lo,lm,m,x,mopx
-h,hm,chnsy,o,j,n,h,y,mosxz
-c,hl,x,mnx,h,t,hx
-s,b,z,dhm,horx,o,x,q,y
-h,ho,h,q,a,y,h,h
-h,lx,x,h,fhx,achy,v,d,cx,hlxy
-hoxz,h,ehoxy,v,m,h,y

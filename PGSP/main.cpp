@@ -16,11 +16,11 @@
 int main(int, char**) {
     using namespace std;
     constexpr size_t num_of_work_group = 12;
-    constexpr size_t min_support = 2;
+    constexpr size_t min_support = 4;
     gsp::DataParser data_parser;
-    const vector<gsp::item> data_base = data_parser.getSimpleDataSet();
-    std::filesystem::path inputPath = "./input/data_set1.txt";
-    //const vector<gsp::item> data_base = data_parser.readFromFile(inputPath);
+    //const vector<gsp::item> data_base = data_parser.getSimpleDataSet();
+    std::filesystem::path inputPath = "./input/data_set0.txt";
+    const vector<gsp::item> data_base = data_parser.readFromFile(inputPath);
     const auto num_threads = std::thread::hardware_concurrency();
     gsp::GspEngineCpu gsp_engine(data_base, min_support);
     gsp_engine.calculate();

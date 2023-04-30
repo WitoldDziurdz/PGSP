@@ -13,23 +13,23 @@ namespace gsp {
 		max_number_of_nodes_{ max_number_of_nodes } {
 	}
 
-	std::map<gsp::item, size_t> HashNode::iter_1() {
+	map_items HashNode::iter_1() {
 		auto items = generate_size_1_candidates(data_base_);
 		auto frequent_items = getFrequentItems(data_base_, items);
 		filter(frequent_items, min_support_);
 		return frequent_items;
 	}
 
-	std::map<gsp::item, size_t> HashNode::iter_2(const std::map<gsp::item, size_t>& frequent_items) {
+	map_items HashNode::iter_2(const map_items& frequent_items) {
 		auto items = generate_size_2_candidates(frequent_items);
-		std::map<gsp::item, size_t> new_frequent_items = getFrequentItems(data_base_, items);
+		map_items new_frequent_items = getFrequentItems(data_base_, items);
 		filter(new_frequent_items, min_support_);
 		return new_frequent_items;
 	}
 
-	std::map<gsp::item, size_t> HashNode::iter_k(const std::map<gsp::item, size_t>& frequent_items, size_t k) {
+	map_items HashNode::iter_k(const map_items& frequent_items, size_t k) {
 		auto items = generate_size_k_candidates(frequent_items, k);
-		std::map<gsp::item, size_t> new_frequent_items = getFrequentItems(data_base_, items);
+		map_items new_frequent_items = getFrequentItems(data_base_, items);
 		filter(new_frequent_items, min_support_);
 		return new_frequent_items;
 	}
@@ -51,7 +51,7 @@ namespace gsp {
 		return { candidates.begin(), candidates.end() };
 	}
 
-	std::vector<gsp::item> HashNode::generate_size_2_candidates(const std::map<gsp::item, size_t>& frequent_items) {
+	std::vector<gsp::item> HashNode::generate_size_2_candidates(const map_items& frequent_items) {
 		std::set<gsp::item> candidates;
 		for (const auto& pr1 : frequent_items) {
 			const std::string element1 = *pr1.first.begin();
@@ -70,7 +70,7 @@ namespace gsp {
 		return { candidates.begin(), candidates.end() };
 	}
 
-	std::vector<gsp::item> HashNode::generate_size_k_candidates(const std::map<gsp::item, size_t>& frequent_items, size_t k) {
+	std::vector<gsp::item> HashNode::generate_size_k_candidates(const map_items& frequent_items, size_t k) {
 		std::set<gsp::item> candidates;
 
 		for (const auto& pr1 : frequent_items) {

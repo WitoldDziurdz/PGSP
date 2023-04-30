@@ -1,12 +1,8 @@
 #include "utils.h"
 #include  <algorithm>
 #include <unordered_set>
-
+#include <unordered_map>
 namespace gsp {
-	template<typename T>
-	size_t getIndex(T item, size_t base) {
-		return std::hash(item) % base;
-	}
 
 	bool isContain(const std::string& item, const std::string& sub_item) {
 		for (char c : sub_item) {
@@ -80,7 +76,7 @@ namespace gsp {
         return { candidates.begin(), candidates.end() };
     }
 
-    std::vector<gsp::item> generate_size_2_candidates(const std::map<gsp::item, size_t>& frequent_items) {
+    std::vector<gsp::item> generate_size_2_candidates(const map_items& frequent_items) {
         std::set<gsp::item> candidates;
         std::vector<std::string> items;
         for (const auto& item : frequent_items) {
@@ -167,7 +163,7 @@ namespace gsp {
         return sum;
     }
 
-    std::vector<gsp::item> generate_size_k_candidates(const std::map<gsp::item, size_t>& frequent_items, size_t k) {
+    std::vector<gsp::item> generate_size_k_candidates(const map_items& frequent_items, size_t k) {
         std::set<gsp::item> candidates;
         std::vector<gsp::item> items;
         for (const auto& item : frequent_items) {
@@ -199,15 +195,15 @@ namespace gsp {
         return { candidates.begin(), candidates.end() };
     }
 
-	void filter(std::map<gsp::item, size_t>& frequency, size_t min_support) {
+	void filter(map_items& frequency, size_t min_support) {
 		std::erase_if(frequency, [min_support](const auto& item) {
 			auto const& [key, value] = item;
 			return value < min_support;
 		});
 	}
 
-	std::map<gsp::item, size_t> getFrequentItems(const std::vector<gsp::item>& data_base, std::vector<item>& candidates) {
-		std::map<gsp::item, size_t> frequent_elements;
+    map_items getFrequentItems(const std::vector<gsp::item>& data_base, std::vector<item>& candidates) {
+        map_items frequent_elements;
 		if (candidates.empty()) {
 			return {};
 		}
@@ -234,7 +230,7 @@ namespace gsp {
         return true;
     }
 
-    std::vector<gsp::item> prune(const std::map<gsp::item, size_t>& frequent_items, const std::vector <gsp::item>& candidates) {
+    std::vector<gsp::item> prune(const map_items& frequent_items, const std::vector <gsp::item>& candidates) {
         std::vector<gsp::item> results;
         std::set<std::string> flat_frequent_items;
         for (const auto& item : frequent_items) {

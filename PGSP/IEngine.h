@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
-#include <map>
+#include <unordered_map>
 
 #include "utils.h"
 
@@ -55,7 +55,7 @@ namespace gsp {
 			std::cout << "+++++++++++++++++++++++++" << std::endl;
 		}
 
-		void print(const std::map<gsp::item, size_t>& items) {
+		void print(const map_items& items) {
 			std::cout << "-------------------------" << std::endl;
 			for (const auto& item : items) {
 				for (const auto& ev : item.first) {
@@ -66,7 +66,7 @@ namespace gsp {
 			std::cout << "-------------------------" << std::endl;
 		}
 
-		void update(const std::map<gsp::item, size_t>& items) {
+		void update(const map_items& items) {
 			for (const auto& el : items) {
 				frequent_items_.push_back({ el.first, el.second });
 			}

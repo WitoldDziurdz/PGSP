@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
-#include <map>
+#include <unordered_map>
 
 #include "utils.h"
 
@@ -13,19 +13,19 @@ namespace gsp {
 
 		HashNode(const std::vector<gsp::item>& data_base, size_t index_node, size_t min_support, size_t max_number_of_nodes);
 
-		std::map<gsp::item, size_t> iter_1();
+		map_items iter_1();
 
-		std::map<gsp::item, size_t> iter_2(const std::map<gsp::item, size_t>& frequent_items);
+		map_items iter_2(const map_items& frequent_items);
 
-		std::map<gsp::item, size_t> iter_k(const std::map<gsp::item, size_t>& frequent_items, size_t k);
+		map_items iter_k(const map_items& frequent_items, size_t k);
 
 	private:
 
 		std::vector<gsp::item> generate_size_1_candidates(const std::vector<gsp::item>& database);
 
-		std::vector<gsp::item> generate_size_2_candidates(const std::map<gsp::item, size_t>& frequent_items);
+		std::vector<gsp::item> generate_size_2_candidates(const map_items& frequent_items);
 
-		std::vector<gsp::item> generate_size_k_candidates(const std::map<gsp::item, size_t>& frequent_items, size_t k);
+		std::vector<gsp::item> generate_size_k_candidates(const map_items& frequent_items, size_t k);
 
 		bool isMine(char ch);
 
