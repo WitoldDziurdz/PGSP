@@ -88,17 +88,18 @@
     <ClCompile Include="HashEngineCpu.cpp" />
     <ClCompile Include="IEngine.h" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Node.cpp" />
+    <ClCompile Include="HashNode.cpp" />
     <ClCompile Include="queue.h" />
     <ClCompile Include="utils.cpp" />
     <ClCompile Include="utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataBase.h" />
+    <ClInclude Include="SPSPMEngineCpu.h" />
     <ClInclude Include="SyclQueue.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="HashEngineCpu.h" />
-    <ClInclude Include="Node.h" />
+    <ClInclude Include="HashNode.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

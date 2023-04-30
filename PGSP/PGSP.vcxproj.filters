@@ -45,7 +45,7 @@
     <ClCompile Include="queue.h">
       <Filter>Header Files\utils</Filter>
     </ClCompile>
-    <ClCompile Include="Node.cpp">
+    <ClCompile Include="HashNode.cpp">
       <Filter>Source Files\cpu</Filter>
     </ClCompile>
     <ClCompile Include="GspEngineCpu.h">
@@ -68,10 +68,13 @@
     <ClInclude Include="HashEngineCpu.h">
       <Filter>Header Files\cpu</Filter>
     </ClInclude>
-    <ClInclude Include="Node.h">
+    <ClInclude Include="HashNode.h">
       <Filter>Header Files\cpu</Filter>
     </ClInclude>
     <ClInclude Include="DataBase.h">
+      <Filter>Header Files\cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="SPSPMEngineCpu.h">
       <Filter>Header Files\cpu</Filter>
     </ClInclude>
   </ItemGroup>

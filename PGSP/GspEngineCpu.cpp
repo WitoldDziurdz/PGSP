@@ -4,7 +4,7 @@
 #include <set>
 #include <thread>
 #include "utils.h"
-#include "Node.h"
+#include "HashNode.h"
 #include <iostream>
 
 #include "GspEngineCpu.h"

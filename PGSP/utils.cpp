@@ -251,9 +251,6 @@ namespace gsp {
             if (isCanBeFrequent(flat_frequent_items, candidate)) {
                 results.push_back(candidate);
             }
-            else {
-                size_t s = 0;
-            }
         }
         return results;
     }
