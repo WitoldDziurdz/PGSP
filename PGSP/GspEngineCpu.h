@@ -12,6 +12,6 @@ namespace gsp {
 	public:
 		GspEngineCpu(const std::vector<gsp::item>& data_base, size_t min_support);
 
-		void calculate();
+		void calculate() override;
 	};
 }

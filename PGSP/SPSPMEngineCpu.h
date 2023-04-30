@@ -20,7 +20,6 @@ namespace gsp {
         SPSPMEngineCpu(const std::vector<gsp::item>& data_base, size_t min_support, size_t num_of_work_group);
 
         void calculate() override;
-
     private:
         std::map<gsp::item, size_t> calculateFrequentItemsAsync(std::vector<std::vector<gsp::item>>& items);
         const size_t num_of_work_group_;

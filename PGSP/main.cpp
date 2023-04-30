@@ -30,15 +30,18 @@ int main(int, char**) {
     gsp_engine.calculate();
     auto items = gsp_engine.getItems();
     gsp::print(items);
+    gsp_engine.writeToFile();
 
     gsp::HashEngineCpu hash_engine(data_base, 2, 5);
     hash_engine.calculate();
     auto hash_items = hash_engine.getItems();
     gsp::print(hash_items);
+    hash_engine.writeToFile();
 
-    gsp::HashEngineCpu simple_engine(data_base, 2, 5);
+    gsp::SPSPMEngineCpu simple_engine(data_base, 2, 5);
     simple_engine.calculate();
     auto simple_items = simple_engine.getItems();
     gsp::print(simple_items);
+    simple_engine.writeToFile();
     return 0;
 }

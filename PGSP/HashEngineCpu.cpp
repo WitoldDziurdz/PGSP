@@ -4,16 +4,20 @@
 #include <map>
 
 #include "HashNode.h"
+#include "profile.h"
 
 namespace gsp {
 
-    HashEngineCpu::HashEngineCpu(const std::vector<gsp::item>& data_base, size_t min_support, size_t num_of_work_group) : IEngine(data_base, min_support), num_of_work_group_{ num_of_work_group } {
+    HashEngineCpu::HashEngineCpu(const std::vector<gsp::item>& data_base, size_t min_support, size_t num_of_work_group) : 
+        IEngine("Hash Partitioned Sequential Pattern Mining CPU", data_base, min_support), 
+        num_of_work_group_{num_of_work_group} {
         for (size_t i = 0; i < num_of_work_group_; ++i) {
             nodes_.emplace_back(data_base, i, min_support, num_of_work_group);
         }
     }
 
     void HashEngineCpu::calculate() {
+        TotalDuration timer(name_ + " - total time speneded on calculating:");
         auto frequentItems = asyncIterateAndCollect([&](HashNode& node) {
             return node.iter_1();
         });

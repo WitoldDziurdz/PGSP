@@ -5,13 +5,16 @@
 #include "utils.h"
 #include "HashNode.h"
 #include "GspEngineCpu.h"
+#include "profile.h"
 
 namespace gsp {
 
-	GspEngineCpu::GspEngineCpu(const std::vector<gsp::item>& data_base, size_t min_support) : IEngine(data_base, min_support) {
+	GspEngineCpu::GspEngineCpu(const std::vector<gsp::item>& data_base, size_t min_support) : 
+		IEngine("Generalized Sequential Pattern", data_base, min_support) {
 	}
 
 	void GspEngineCpu::calculate() {
+		TotalDuration timer(name_ + " - total time speneded on calculating:");
 		auto items = generate_size_1_candidates(data_base_);
 		auto frequent_items = getFrequentItems(data_base_, items);
 		filter(frequent_items, min_support_);

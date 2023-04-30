@@ -393,6 +393,6 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
-
+/PGSP/*.txt
 # JetBrains Rider
 *.sln.iml

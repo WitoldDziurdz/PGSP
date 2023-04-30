@@ -71,7 +71,7 @@
       </PrecompiledHeaderFile>
       <SYCLWarningLevel>Level3</SYCLWarningLevel>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -89,6 +89,7 @@
     <ClCompile Include="IEngine.h" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="HashNode.cpp" />
+    <ClCompile Include="profile.cpp" />
     <ClCompile Include="queue.h" />
     <ClCompile Include="SimpleNode.h" />
     <ClCompile Include="SPSPMEngineCpu.cpp" />
@@ -97,6 +98,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataBase.h" />
+    <ClInclude Include="profile.h" />
     <ClInclude Include="SPSPMEngineCpu.h" />
     <ClInclude Include="SyclQueue.h" />
     <ClInclude Include="Engine.h" />
