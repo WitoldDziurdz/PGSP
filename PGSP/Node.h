@@ -20,117 +20,107 @@ namespace gsp {
 		Node(const Node&) = delete;
 		Node& operator=(const Node&) = delete;
 
-		Node(size_t index_node, const std::vector<gsp::item> data_base, 
-			std::shared_ptr<std::vector<gsp::ConcurrentQueue<gsp::item>>> data_base_pipes) :
+		Node(const std::vector<gsp::item>& data_base, size_t index_node, size_t min_support, size_t max_number_of_nodes) :
+			data_base_{ data_base},
 			index_node_{index_node},
-			dataBase_(data_base), 
-			data_base_pipes_(data_base_pipes){
-			reset();
+			min_support_{ min_support}, 
+			max_number_of_nodes_{ max_number_of_nodes } {
 		}
 
-		void readAndCount(size_t sizeOfSequence) {
-			while (not wasReaded()) {
-				read(1, sizeOfSequence);
-				count();
-			}
+		std::map<gsp::item, size_t> iter_1() {
+			auto items = generate_size_1_candidates(data_base_);
+			auto frequent_items = getFrequentItems(data_base_, items);
+			filter(frequent_items, min_support_);
+			return frequent_items;
 		}
 
-		void count() {
-			gsp::ConcurrentQueue<gsp::item>& items = data_base_pipes_->at(index_node_);
-			while (!items.empty())
-			{
-				auto el = items.try_pop();
-				if (el) {
-					chechCandidates(*el);
-				}
-			}
+		std::map<gsp::item, size_t> iter_2(const std::map<gsp::item, size_t>& frequent_items) {
+			auto items = generate_size_2_candidates(frequent_items);
+			std::map<gsp::item, size_t> new_frequent_items = getFrequentItems(data_base_, items);
+			filter(new_frequent_items, min_support_);
+			return new_frequent_items;
 		}
 
-		void read(size_t nums, size_t sizeOfSequence) {
-			while ((not wasReaded()) && (nums > 0)) {
-				auto elements = dataBase_.read(sizeOfSequence);
-				for (size_t i = 0; i < elements.size(); ++i) {
-					setElement(std::move(elements[i]));
-				}
-				nums--;
-			}
-		}
-
-		void generate(std::map<gsp::item, size_t>& frequent_items) {
-			if (not frequent_items.empty()) {
-				std::vector<gsp::item> frequent_elements;
-				frequent_elements.reserve(frequent_items.size());
-				std::for_each(frequent_items.begin(), frequent_items.end(), [&frequent_elements](auto& item) {
-					frequent_elements.push_back(item.first);
-				});
-				generateCandidates(frequent_elements);
-			}
-		}
-
-		std::map<gsp::item, size_t> getFrequentItems(size_t min_support) {
-			const auto count = std::erase_if(candidates_, [min_support](const auto& item) {
-				auto const& [key, value] = item;
-				return value < min_support;
-			});
-			return candidates_;
-		}
-
-
-		bool wasReaded() {
-			return dataBase_.wasReaded();
-		}
-
-		void reset() {
-			dataBase_.reset();
-			candidates_.clear();
+		std::map<gsp::item, size_t> iter_k(const std::map<gsp::item, size_t>& frequent_items) {
+			auto items = generate_size_2_candidates(frequent_items);
+			std::map<gsp::item, size_t> new_frequent_items = getFrequentItems(data_base_, items);
+			filter(new_frequent_items, min_support_);
+			return new_frequent_items;
 		}
 
 
 	private:
 
-		void chechCandidates(const gsp::item& item) {
-			for (std::pair<const gsp::item, size_t>& candidate : candidates_) {
-				if (gsp::isSubSequence(item, candidate.first)) {
-					candidate.second++;
-				}
-			}
-		}
-
-		void generateCandidates(const std::vector<gsp::item>& frequent_elements) {
-			for (const auto& seq1 : frequent_elements) {
-				for (const auto& seq2 : frequent_elements) {
-					if (seq1.size() == seq2.size()) {
-						bool canJoin = true;
-
-						for (size_t i = 0; i < seq1.size() - 1; ++i) {
-							if (seq1[i+1] != seq2[i]) {
-								canJoin = false;
-								break;
-							}
-						}
-
-						if (canJoin && seq1.back() != seq2.back() && isMine(seq1[0])) {
-							gsp::item newCandidate = seq1;
-							newCandidate.push_back(seq2.back());
-							candidates_.insert({ newCandidate, 0 });
+		std::vector<gsp::item> generate_size_1_candidates(const std::vector<gsp::item>& database) {
+			std::set<gsp::item> candidates;
+			for (const auto& transaction : database) {
+				for (const auto& element : transaction) {
+					for (const auto& ev : element) {
+						if (isMine(ev)) {
+							std::string str;
+							str += ev;
+							gsp::item seq = { str };
+							candidates.insert(seq);
 						}
 					}
 				}
 			}
+			return { candidates.begin(), candidates.end() };
 		}
 
-
-		void setElement(std::unique_ptr<gsp::item> element) {
-			auto ids= getIds(element->at(0));
-			if (ids.size() == 1) {
-				data_base_pipes_->at(ids[0]).push(std::move(element));
-			}
-			else {
-				for (auto id : ids) {
-					auto el = std::make_unique<gsp::item>(*element);
-					data_base_pipes_->at(id).push(std::move(el));
+		std::vector<gsp::item> generate_size_2_candidates(const std::map<gsp::item, size_t>& frequent_items) {
+			std::set<gsp::item> candidates;
+			for (const auto& pr1 : frequent_items) {
+				const std::string element1 = *pr1.first.begin();
+				if (isMine(element1)) {
+					for (const auto& pr2 : frequent_items) {
+						const std::string element2 = *pr2.first.begin();
+						if (element1 != element2) {
+							auto str = element1 + element2;
+							std::sort(str.begin(), str.end());
+							candidates.insert({ str });
+						}
+						candidates.insert({ element1,  element2 });
+					}
 				}
 			}
+			return { candidates.begin(), candidates.end() };
+		}
+
+		std::vector<gsp::item> generate_size_k_candidates(const std::map<gsp::item, size_t>& frequent_items, size_t k) {
+			std::set<gsp::item> candidates;
+
+			for (const auto& pr1 : frequent_items) {
+				for (const auto& pr2 : frequent_items) {
+					const auto& element1 = pr1.first;
+					const auto& element2 = pr2.first;
+					if (isMine(*element1.begin())) {
+						auto new_element1 = deleteFirstElement(element1);
+						auto new_element2 = deleteLastElement(element2);
+						if (new_element1 == new_element2) {
+							auto pr = getLastElement(element2);
+							gsp::item candidate = element1;
+							if (needMerge(element1, element2)) {
+								candidate.back() += pr;
+								std::sort(candidate.back().begin(), candidate.back().end());
+							}
+							gsp::item candidate2 = element1;
+							candidate2.push_back(pr);
+							if (getSize(candidate) == k) {
+								candidates.insert(candidate);
+							}
+							if (getSize(candidate2) == k) {
+								candidates.insert(candidate2);
+							}
+						}
+					}
+				}
+			}
+			return { candidates.begin(), candidates.end() };
+		}
+
+		bool isMine(char ch) {
+			return getId(ch) == index_node_;
 		}
 
 		bool isMine(const std::string& str) {
@@ -147,13 +137,12 @@ namespace gsp {
 		}
 
 		size_t getId(char ch) {
-			return std::hash<char>{}(ch) % data_base_pipes_->size();
+			return std::hash<char>{}(ch) % max_number_of_nodes_;
 		}
 
-
-		size_t index_node_;
-		DataBase dataBase_;
-		std::shared_ptr<std::vector<gsp::ConcurrentQueue<gsp::item>>> data_base_pipes_;
-		std::map<gsp::item, size_t> candidates_;
+		const std::vector<gsp::item>& data_base_;
+		const size_t index_node_;
+		const size_t min_support_;
+		const size_t max_number_of_nodes_;
 	};
 }

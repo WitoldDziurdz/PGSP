@@ -5,6 +5,7 @@
 #include <queue>
 
 #include "GspEngineCpu.h"
+#include "HashEngineCpu.h"
 #include "utils.h"
 #include <CL/sycl.hpp>
 
@@ -13,7 +14,7 @@
 
 int main(int, char**) {
     using namespace std;
-    constexpr size_t num_of_work_group = 5;
+    //constexpr size_t num_of_work_group = 5;
 
     const vector<gsp::item> data_base = {
         { "t", "s", "g", "g", "l", "n", "s", "fst", "s", "l" },
@@ -26,10 +27,14 @@ int main(int, char**) {
     };
 
     //const auto num_threads = std::thread::hardware_concurrency();
-    gsp::GspEngineCpu engine(data_base, 2, num_of_work_group);
-    engine.calculate();
-    auto items = engine.getItems();
-
+    gsp::GspEngineCpu gsp_engine(data_base, 2);
+    gsp_engine.calculate();
+    auto items = gsp_engine.getItems();
     gsp::print(items);
+
+    gsp::HashEngineCpu hash_engine(data_base, 2, 5);
+    hash_engine.calculate();
+    auto hash_items = hash_engine.getItems();
+    gsp::print(hash_items);
     return 0;
 }

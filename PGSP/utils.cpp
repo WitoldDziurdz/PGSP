@@ -21,8 +21,7 @@ namespace gsp {
 		if (seq.size() < sub_seq.size()) {
 			return false;
 		}
-		for (auto it = seq.begin(), it_sub = sub_seq.begin();
-			it != seq.end(); it++) {
+		for (auto it = seq.begin(), it_sub = sub_seq.begin(); it != seq.end(); it++) {
 			if (isContain(*it, *it_sub)) {
 				it_sub++;
 			}
@@ -81,7 +80,6 @@ namespace gsp {
                     str += ev;
                     gsp::item seq = { str };
                     candidates.insert(seq);
-
                 }
             }
         }

@@ -1,4 +1,3 @@
-#pragma once
 #include <string>
 #include <vector>
 #include <map>
@@ -12,11 +11,10 @@
 
 namespace gsp {
 
-	GspEngineCpu::GspEngineCpu(const std::vector<gsp::item>& data_base, size_t min_support, size_t num_of_work_group) : data_base_{ data_base }, min_support_{ min_support } {
+	GspEngineCpu::GspEngineCpu(const std::vector<gsp::item>& data_base, size_t min_support) : IEngine(data_base, min_support) {
 	}
 
 	void GspEngineCpu::calculate() {
-
 		auto items = generate_size_1_candidates(data_base_);
 		auto frequent_items = getFrequentItems(data_base_, items);
 		filter(frequent_items, min_support_);
@@ -36,16 +34,6 @@ namespace gsp {
 			filter(frequent_items, min_support_);
 			update(frequent_items);
 			k++;
-		}
-	}
-
-	std::vector<std::pair<gsp::item, size_t>> GspEngineCpu::getItems() {
-		return frequent_items_;
-	}
-
-	void GspEngineCpu::update(const std::map<gsp::item, size_t>& items) {
-		for (const auto& el : items) {
-			frequent_items_.push_back({ el.first, el.second });
 		}
 	}
 }
