@@ -89,5 +89,8 @@
     <ClInclude Include="profile.h">
       <Filter>Header Files\utils</Filter>
     </ClInclude>
+    <ClInclude Include="DataParser.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

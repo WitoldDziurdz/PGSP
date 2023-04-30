@@ -3,7 +3,9 @@
 #include <string>
 #include <set>
 #include <queue>
+#include <filesystem>
 
+#include "DataParser.h"
 #include "GspEngineCpu.h"
 #include "HashEngineCpu.h"
 #include "SPSPMEngineCpu.h"
@@ -13,32 +15,26 @@
 
 int main(int, char**) {
     using namespace std;
-    //constexpr size_t num_of_work_group = 5;
-
-    const vector<gsp::item> data_base = {
-        { "t", "s", "g", "g", "l", "n", "s", "fst", "s", "l" },
-        { "s", "ns", "s", "g", "k", "l", "l", "s", "k", "l", "g" },
-        { "glnt", "s", "s", "a", "c", "p", "a", "l", "b" },
-        { "s", "b", "g", "b", "glps", "c", "c" },
-        { "gns", "s", "s", "ls", "n", "g", "g" },
-        { "r", "s", "s", "s" },
-        { "g", "g", "g", "p", "t", "p", "gpr" }
-    };
-
-    //const auto num_threads = std::thread::hardware_concurrency();
-    gsp::GspEngineCpu gsp_engine(data_base, 2);
+    constexpr size_t num_of_work_group = 12;
+    constexpr size_t min_support = 2;
+    gsp::DataParser data_parser;
+    const vector<gsp::item> data_base = data_parser.getSimpleDataSet();
+    std::filesystem::path inputPath = "./input/data_set1.txt";
+    //const vector<gsp::item> data_base = data_parser.readFromFile(inputPath);
+    const auto num_threads = std::thread::hardware_concurrency();
+    gsp::GspEngineCpu gsp_engine(data_base, min_support);
     gsp_engine.calculate();
     auto items = gsp_engine.getItems();
     gsp::print(items);
     gsp_engine.writeToFile();
 
-    gsp::HashEngineCpu hash_engine(data_base, 2, 5);
+    gsp::HashEngineCpu hash_engine(data_base, min_support, num_of_work_group);
     hash_engine.calculate();
     auto hash_items = hash_engine.getItems();
     gsp::print(hash_items);
     hash_engine.writeToFile();
 
-    gsp::SPSPMEngineCpu simple_engine(data_base, 2, 5);
+    gsp::SPSPMEngineCpu simple_engine(data_base, min_support, num_of_work_group);
     simple_engine.calculate();
     auto simple_items = simple_engine.getItems();
     gsp::print(simple_items);
