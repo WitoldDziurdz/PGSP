@@ -277,10 +277,18 @@ namespace gsp {
         return os;
     }
 
+    std::ostream& operator<<(std::ostream& os, const std::map<gsp::item, size_t>& items) {
+        for (const auto& item : items) {
+            os << item << std::endl;
+        }
+        return os;
+    }
+
 
     void print(const std::vector<std::pair<gsp::item, size_t>>& items) {
+        std::map<gsp::item, size_t> elements(items.begin(), items.end());
         std::cout << "-------------------------" << std::endl;
-        std::cout << items;
+        std::cout << elements;
         std::cout << "-------------------------" << std::endl;
     }
 
