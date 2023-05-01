@@ -26,7 +26,7 @@ namespace gsp {
     using item = std::vector<std::string>;
     using map_items = std::unordered_map<std::vector<std::string>, int, VectorOfStringHash>;
 
-    bool isContain(const std::string& item, const std::string& sub_item);
+    bool isContain(const std::string_view item, const std::string_view sub_item);
 
     bool isSubSequence(const std::vector<std::string>& seq, const std::vector<std::string>& sub_seq);
 
@@ -45,7 +45,7 @@ namespace gsp {
     std::string deleteFirstElement(const gsp::item& element);
 
     std::string deleteLastElement(const gsp::item& element);
-
+    bool isCanBecandidate(const gsp::item& first, const gsp::item& second);
     std::string getLastElement(const gsp::item& element);
 
     bool needMerge(const gsp::item& element1, const gsp::item& element2);

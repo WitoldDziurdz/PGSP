@@ -54,10 +54,10 @@ namespace gsp {
 	std::vector<gsp::item> HashNode::generate_size_2_candidates(const map_items& frequent_items) {
 		std::set<gsp::item> candidates;
 		for (const auto& pr1 : frequent_items) {
-			const std::string element1 = *pr1.first.begin();
+			const std::string& element1 = *pr1.first.begin();
 			if (isMine(element1)) {
 				for (const auto& pr2 : frequent_items) {
-					const std::string element2 = *pr2.first.begin();
+					const std::string& element2 = *pr2.first.begin();
 					if (element1 != element2) {
 						auto str = element1 + element2;
 						std::sort(str.begin(), str.end());
@@ -74,13 +74,11 @@ namespace gsp {
 		std::set<gsp::item> candidates;
 
 		for (const auto& pr1 : frequent_items) {
-			for (const auto& pr2 : frequent_items) {
-				const auto& element1 = pr1.first;
-				const auto& element2 = pr2.first;
-				if (isMine(*element1.begin())) {
-					auto new_element1 = deleteFirstElement(element1);
-					auto new_element2 = deleteLastElement(element2);
-					if (new_element1 == new_element2) {
+			const auto& element1 = pr1.first;
+			if (isMine(*element1.begin())) {
+				for (const auto& pr2 : frequent_items) {
+					const auto& element2 = pr2.first;
+					if (isCanBecandidate(element1, element2)) {
 						auto pr = getLastElement(element2);
 						gsp::item candidate = element1;
 						if (needMerge(element1, element2)) {
@@ -107,16 +105,7 @@ namespace gsp {
 	}
 
 	bool HashNode::isMine(const std::string& str) {
-		auto ids = getIds(str);
-		return std::find(ids.cbegin(), ids.cend(), index_node_) != ids.cend();
-	}
-
-	std::vector<size_t> HashNode::getIds(const std::string& str) {
-		std::vector<size_t> ids;
-		for (char ch : str) {
-			ids.push_back(getId(ch));
-		}
-		return ids;
+		return getId(str[0]);
 	}
 
 	size_t HashNode::getId(char ch) {

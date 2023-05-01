@@ -24,10 +24,10 @@ namespace gsp {
                 futures.push_back(std::async(std::launch::async, f, std::ref(node)));
             }
 
-           map_items collectedItems;
+            map_items collectedItems;
             for (auto& future : futures) {
                 auto fItem = future.get();
-                collectedItems.insert(fItem.begin(), fItem.end());
+                collectedItems.insert(std::make_move_iterator(fItem.begin()), std::make_move_iterator(fItem.end()));
             }
 
             return collectedItems;

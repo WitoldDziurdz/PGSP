@@ -2,9 +2,11 @@
 #include  <algorithm>
 #include <unordered_set>
 #include <unordered_map>
+#include <string_view>
+
 namespace gsp {
 
-	bool isContain(const std::string& item, const std::string& sub_item) {
+	bool isContain(const std::string_view item, const std::string_view sub_item) {
 		for (char c : sub_item) {
 			if (std::count(item.begin(), item.end(), c) < std::count(sub_item.begin(), sub_item.end(), c)) {
 				return false;
@@ -78,7 +80,7 @@ namespace gsp {
 
     std::vector<gsp::item> generate_size_2_candidates(const map_items& frequent_items) {
         std::set<gsp::item> candidates;
-        std::vector<std::string> items;
+        std::vector<std::string_view> items;
         for (const auto& item : frequent_items) {
             for (const auto& element : item.first) {
                 items.push_back(element);
@@ -87,12 +89,14 @@ namespace gsp {
 
         for (const auto& element1 : items) {
             for (const auto& element2 : items) {
+                std::string str1 = std::string(element1);
+                std::string str2 = std::string(element2);
                 if (element1 != element2) {
-                    auto str = element1 + element2;
+                    auto str = str1 + str2;
                     std::sort(str.begin(), str.end());
                     candidates.insert({ str });
                 }
-                candidates.insert({ element1,  element2 });
+                candidates.insert({ str1,  str2 });
             }
         }
 
@@ -104,12 +108,20 @@ namespace gsp {
             return {};
         }
 
-        std::stringstream ss;
-        for (auto& el : element) {
-            ss << el;
+        std::string result;
+
+        size_t totalLength = 0;
+        for (const auto& el : element) {
+            totalLength += el.length();
         }
 
-        return ss.str();
+        result.reserve(totalLength);
+
+        for (const auto& el : element) {
+            result += el;
+        }
+
+        return result;
     }
 
     std::string deleteFirstElement(const gsp::item& element) {
@@ -123,13 +135,25 @@ namespace gsp {
     }
 
     std::string deleteLastElement(const gsp::item& element) {
-        if (element.empty()) {
-            return {};
-        }
         std::string str = flatItem(element);
 
-        str.erase(str.size() - 1);
+        if (!str.empty()) {
+            str.pop_back();
+        }
+
         return str;
+    }
+
+    bool isCanBecandidate(const gsp::item& first, const gsp::item& second) {
+        if (first.size() != second.size()) {
+            return false;
+        }
+        for (size_t idx = 1; idx < first.size(); ++idx) {
+            if (first[idx] != second[idx - 1]) {
+                return false;
+            }
+        }
+        return true;
     }
 
     std::string getLastElement(const gsp::item& element) {
@@ -265,8 +289,15 @@ namespace gsp {
         os << "}";
         return os;
     }
-
+    
     std::ostream& operator<<(std::ostream& os, const std::vector<std::pair<gsp::item, size_t>>& items) {
+        for (const auto& item : items) {
+            os << item << std::endl;
+        }
+        return os;
+    }
+
+    std::ostream& operator<<(std::ostream& os, const std::map<gsp::item, size_t>& items) {
         for (const auto& item : items) {
             os << item << std::endl;
         }
@@ -275,8 +306,9 @@ namespace gsp {
 
 
     void print(const std::vector<std::pair<gsp::item, size_t>>& items) {
+        std::map<gsp::item, size_t> elements(items.begin(), items.end());
         std::cout << "-------------------------" << std::endl;
-        std::cout << items;
+        std::cout << elements;
         std::cout << "-------------------------" << std::endl;
     }
 
