@@ -1,5 +1,5 @@
 #include "utils.h"
-#include  <algorithm>
+#include <algorithm>
 #include <unordered_set>
 #include <unordered_map>
 #include <string_view>
@@ -80,26 +80,18 @@ namespace gsp {
 
     std::vector<gsp::item> generate_size_2_candidates(const map_items& frequent_items) {
         std::set<gsp::item> candidates;
-        std::vector<std::string_view> items;
-        for (const auto& item : frequent_items) {
-            for (const auto& element : item.first) {
-                items.push_back(element);
-            }
-        }
-
-        for (const auto& element1 : items) {
-            for (const auto& element2 : items) {
-                std::string str1 = std::string(element1);
-                std::string str2 = std::string(element2);
+        for (const auto& pr1 : frequent_items) {
+            const std::string& element1 = *pr1.first.begin();
+            for (const auto& pr2 : frequent_items) {
+                const std::string& element2 = *pr2.first.begin();
                 if (element1 != element2) {
-                    auto str = str1 + str2;
+                    auto str = element1 + element2;
                     std::sort(str.begin(), str.end());
                     candidates.insert({ str });
                 }
-                candidates.insert({ str1,  str2 });
+                candidates.insert({ element1,  element2 });
             }
         }
-
         return { candidates.begin(), candidates.end() };
     }
 
@@ -124,53 +116,30 @@ namespace gsp {
         return result;
     }
 
-    std::string deleteFirstElement(const gsp::item& element) {
-        if (element.empty()) {
-            return {};
-        }
-        std::string str = flatItem(element);
+    bool isCanBeCandidate(const gsp::item& first, const gsp::item& second) {
+        auto len1 = std::accumulate(first.begin(), first.end(), 0, [](size_t acc, const auto& s) {
+            return acc + s.size();
+        });
+        auto len2 = std::accumulate(second.begin(), second.end(), 0, [](size_t acc, const auto& s) {
+            return acc + s.size();
+        });
 
-        str.erase(0, 1);
-        return str;
-    }
-
-    std::string deleteLastElement(const gsp::item& element) {
-        std::string str = flatItem(element);
-
-        if (!str.empty()) {
-            str.pop_back();
-        }
-
-        return str;
-    }
-
-    bool isCanBecandidate(const gsp::item& first, const gsp::item& second) {
-        if (first.size() != second.size()) {
+        if (len1 != len2) {
             return false;
         }
-        for (size_t idx = 1; idx < first.size(); ++idx) {
-            if (first[idx] != second[idx - 1]) {
+
+        ItemIteartor it1(first);
+        ItemIteartor it2(second);
+        ++it1;
+        for (size_t i = 1; i < len1; ++i) {
+            if ((*it1) != (*it2)) {
                 return false;
             }
+            ++it1;
+            ++it2;
         }
-        return true;
-    }
 
-    std::string getLastElement(const gsp::item& element) {
-        if (element.empty()) {
-            return {};
-        }
-        auto lastElement = element.end() - 1;
-        if (lastElement->size() == 1) {
-            return *lastElement;
-        }
-        else {
-            auto lastIndex = lastElement->size() - 1;
-            char ch = lastElement->at(lastIndex);
-            std::string str;
-            str += ch;
-            return str;
-        }
+        return true;
     }
 
     bool needMerge(const gsp::item& element1, const gsp::item& element2) {
@@ -189,32 +158,29 @@ namespace gsp {
 
     std::vector<gsp::item> generate_size_k_candidates(const map_items& frequent_items, size_t k) {
         std::set<gsp::item> candidates;
-        std::vector<gsp::item> items;
-        for (const auto& item : frequent_items) {
-            items.push_back(item.first);
-        }
-
-        for (const auto& element1 : items) {
-            for (const auto& element2 : items) {
-                auto new_element1 = deleteFirstElement(element1);
-                auto new_element2 = deleteLastElement(element2);
-                if (new_element1 == new_element2) {
-                    auto pr = getLastElement(element2);
-                    gsp::item candidate = element1;
-                    if (needMerge(element1, element2)) {
-                        candidate.back() += pr;
-                        std::sort(candidate.back().begin(), candidate.back().end());
-                    }
-                    gsp::item candidate2 = element1;
-                    candidate2.push_back(pr);
-                    if (getSize(candidate) == k) {
-                        candidates.insert(candidate);
-                    }
-                    if (getSize(candidate2) == k) {
-                        candidates.insert(candidate2);
+        for (const auto& pr1 : frequent_items) {
+            const auto& element1 = pr1.first;
+             for (const auto& pr2 : frequent_items) {
+                    const auto& element2 = pr2.first;
+                    if (isCanBeCandidate(element1, element2)) {
+                        gsp::item candidate = element1;
+                        auto pr = element2.back().back();
+                        if (needMerge(element1, element2)) {
+                            candidate.back() += pr;
+                            std::sort(candidate.back().begin(), candidate.back().end());
+                            if (getSize(candidate) == k) {
+                                candidates.insert(candidate);
+                            }
+                        }
+                        gsp::item candidate2 = element1;
+                        std::string str;
+                        str += pr;
+                        candidate2.push_back(str);
+                        if (getSize(candidate2) == k) {
+                            candidates.insert(candidate2);
+                        }
                     }
                 }
-            }
         }
         return { candidates.begin(), candidates.end() };
     }

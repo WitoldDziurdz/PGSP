@@ -72,24 +72,25 @@ namespace gsp {
 
 	std::vector<gsp::item> HashNode::generate_size_k_candidates(const map_items& frequent_items, size_t k) {
 		std::set<gsp::item> candidates;
-
 		for (const auto& pr1 : frequent_items) {
 			const auto& element1 = pr1.first;
 			if (isMine(*element1.begin())) {
 				for (const auto& pr2 : frequent_items) {
 					const auto& element2 = pr2.first;
-					if (isCanBecandidate(element1, element2)) {
-						auto pr = getLastElement(element2);
+					if (isCanBeCandidate(element1, element2)) {
 						gsp::item candidate = element1;
+						auto pr = element2.back().back();
 						if (needMerge(element1, element2)) {
 							candidate.back() += pr;
 							std::sort(candidate.back().begin(), candidate.back().end());
+							if (getSize(candidate) == k) {
+								candidates.insert(candidate);
+							}
 						}
 						gsp::item candidate2 = element1;
-						candidate2.push_back(pr);
-						if (getSize(candidate) == k) {
-							candidates.insert(candidate);
-						}
+						std::string str;
+						str += pr;
+						candidate2.push_back(str);
 						if (getSize(candidate2) == k) {
 							candidates.insert(candidate2);
 						}
@@ -105,10 +106,10 @@ namespace gsp {
 	}
 
 	bool HashNode::isMine(const std::string& str) {
-		return getId(str[0]);
+		return isMine(str[0]);
 	}
 
 	size_t HashNode::getId(char ch) {
-		return std::hash<char>{}(ch) % max_number_of_nodes_;
+		return static_cast<size_t>(ch) % max_number_of_nodes_;
 	}
 }

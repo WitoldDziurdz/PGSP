@@ -4,27 +4,14 @@
 #include <set>
 #include <map>
 #include <algorithm>
-#include <sstream>
 #include <numeric>
 #include <iostream>
 #include <fstream>
 #include <unordered_map>
 
+#include "HelperTypes.h"
+
 namespace gsp {
-
-    struct VectorOfStringHash {
-        std::size_t operator()(const std::vector<std::string>& vec) const {
-            std::size_t seed = 0;
-            std::hash<std::string> hasher;
-            for (const auto& str : vec) {
-                seed ^= hasher(str) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-            }
-            return seed;
-        }
-    };
-
-    using item = std::vector<std::string>;
-    using map_items = std::unordered_map<std::vector<std::string>, int, VectorOfStringHash>;
 
     bool isContain(const std::string_view item, const std::string_view sub_item);
 
@@ -42,11 +29,7 @@ namespace gsp {
 
     std::string flatItem(const gsp::item& element);
 
-    std::string deleteFirstElement(const gsp::item& element);
-
-    std::string deleteLastElement(const gsp::item& element);
-    bool isCanBecandidate(const gsp::item& first, const gsp::item& second);
-    std::string getLastElement(const gsp::item& element);
+    bool isCanBeCandidate(const gsp::item& first, const gsp::item& second);
 
     bool needMerge(const gsp::item& element1, const gsp::item& element2);
 

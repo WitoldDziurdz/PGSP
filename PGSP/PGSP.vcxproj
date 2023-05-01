@@ -99,6 +99,7 @@
   <ItemGroup>
     <ClInclude Include="DataBase.h" />
     <ClInclude Include="DataParser.h" />
+    <ClInclude Include="HelperTypes.h" />
     <ClInclude Include="profile.h" />
     <ClInclude Include="SPSPMEngineCpu.h" />
     <ClInclude Include="SyclQueue.h" />
