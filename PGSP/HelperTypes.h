@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <numeric>
 #include <unordered_map>
+#include <span>
 
 namespace gsp {
 
@@ -62,4 +63,145 @@ namespace gsp {
         size_t str_index = 0;
         const item& items_;
     };
+
+
+    class DataBase {
+    public:
+        DataBase(std::string_view data_base, std::span<size_t> idx) : data_base_{ data_base }, idx_{ idx } {
+            reset();
+        }
+
+        std::string_view getLine() {
+            size_t index = current_index;
+            if (index + 1 == idx_.size()) {
+                return data_base_.substr(idx_[index]);
+            }
+            size_t nums = idx_[index + 1] - idx_[index];
+            return data_base_.substr(idx_[index], nums);
+        }
+
+        size_t nextLine() {
+            if (current_index < idx_.size()) {
+                ++current_index;
+            }
+            return current_index;
+        }
+
+        void reset() {
+            current_index = 0;
+        }
+
+        class iterator {
+        public:
+
+            iterator(DataBase& db, size_t index) : db_{ &db }, index_{ index } {}
+
+            iterator& operator++() {
+                index_ = db_->nextLine();
+                return *this;
+            }
+
+            std::string_view operator*() {
+                return db_->getLine();
+            }
+
+            bool operator==(const iterator& other) const {
+                return db_ == other.db_ && index_ == other.index_;
+            }
+
+            bool operator!=(const iterator& other) const {
+                return !(*this == other);
+            }
+
+        private:
+            DataBase* db_;
+            size_t index_;
+        };
+
+        iterator begin() {
+            reset();
+            return iterator{ *this, 0 };
+        }
+
+        iterator end() {
+            return iterator{ *this, idx_.size() };
+        }
+    private:
+        size_t current_index;
+        const std::string_view data_base_;
+        const std::span<size_t> idx_;
+    };
+    
+
+
+    class FlatElement {
+    public:
+        FlatElement(std::string_view s) : data(s) {}
+
+        class iterator {
+        public:
+            iterator(std::string_view view) : remaining_(view) {
+                update();
+            }
+
+            iterator& operator++() {
+                update();
+                return *this;
+            }
+
+            std::string_view operator*() const {
+                return current_;
+            }
+
+            bool operator==(const iterator& other) const {
+                return current_ == other.current_ && remaining_ == other.remaining_;
+            }
+
+            bool operator!=(const iterator& other) const {
+                return !(*this == other);
+            }
+
+        private:
+            void update() {
+                if (!remaining_.empty()) {
+                    auto sep_pos = remaining_.find(',');
+                    if (sep_pos != std::string_view::npos) {
+                        current_ = remaining_.substr(0, sep_pos);
+                        remaining_ = remaining_.substr(sep_pos + 1);
+                    }
+                    else {
+                        current_ = remaining_;
+                        remaining_ = {};
+                    }
+                }
+                else {
+                    current_ = {};
+                }
+            }
+
+            std::string_view remaining_;
+            std::string_view current_;
+        };
+
+        iterator begin() const {
+            return iterator(data);
+        }
+
+        iterator end() const {
+            return iterator({});
+        }
+
+        size_t size() const {
+            size_t count = 0;
+            for (const auto& _ : *this) {
+                ++count;
+            }
+            return count;
+        }
+
+
+    private:
+        std::string_view data;
+    };
+
 }

@@ -102,10 +102,12 @@
     <ClInclude Include="HelperTypes.h" />
     <ClInclude Include="profile.h" />
     <ClInclude Include="SPSPMEngineCpu.h" />
+    <ClInclude Include="SPSPMEngineGpu.h" />
     <ClInclude Include="SyclQueue.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="HashEngineCpu.h" />
     <ClInclude Include="HashNode.h" />
+    <ClInclude Include="sycl_utiils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
