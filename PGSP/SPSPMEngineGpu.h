@@ -35,15 +35,37 @@ namespace gsp {
             auto flat_data_base = convert(data_base_);
             std::string_view data = flat_data_base.first;
             std::span<size_t> ids(flat_data_base.second.data(), flat_data_base.second.size());
-
-            auto candidates = generate_size_1_candidates(data_base_);
-            auto flat_candidates = convert(candidates);
-            std::string_view data_candidates = flat_candidates.first;
-            std::span<size_t> ids_candidates(flat_candidates.second.data(), flat_data_base.second.size());
-            sycl::buffer<size_t, 1> Buffer(ids_candidates.size());
-
             sycl::buffer<char, 1> data_buffer(data.data(), data.size());
             sycl::buffer<size_t, 1> ids_buffer(ids.data(), ids.size());
+
+            auto candidates = generate_size_1_candidates(data_base_);
+            auto frequent_items = getFrequentItems(queue, data_buffer, ids_buffer, candidates);
+            update(frequent_items);
+
+            candidates = generate_size_2_candidates(frequent_items);
+            frequent_items = getFrequentItems(queue, data_buffer, ids_buffer, candidates);
+            update(frequent_items);
+
+            size_t k = 3;
+            while (!frequent_items.empty()) {
+                candidates = generate_size_k_candidates(frequent_items, k);
+                if(candidates.empty()){
+                    break;
+                }
+                frequent_items = getFrequentItems(queue, data_buffer, ids_buffer, candidates);
+                update(frequent_items);
+                k++;
+            }
+        }
+    private:
+
+        inline gsp::map_items getFrequentItems(sycl::queue& queue, sycl::buffer<char, 1>& data_buffer, sycl::buffer<size_t, 1>& ids_buffer,
+                                        std::vector<gsp::item>& candidates){
+            auto flat_candidates = convert(candidates);
+            std::string_view data_candidates = flat_candidates.first;
+            std::span<size_t> ids_candidates(flat_candidates.second.data(), flat_candidates.second.size());
+            sycl::buffer<size_t, 1> Buffer(ids_candidates.size());
+
 
             sycl::buffer<char, 1> data_candidates_buffer(data_candidates.data(), data_candidates.size());
             sycl::buffer<size_t, 1> ids_candidates_buffer(ids_candidates.data(), ids_candidates.size());
@@ -64,6 +86,11 @@ namespace gsp {
                     std::string_view gpu_data_candidates = std::string_view(data_candidates_access.get_pointer(), data_candidates_access.size());
                     sycl::span<size_t> gpu_ids_candidates(static_cast<size_t*>(ids_candidates_access.get_pointer()), ids_candidates_access.size());
                     DataBase gpu_candidates(gpu_data_candidates, gpu_ids_candidates);
+
+                    for(size_t i = 0; i< Accessor.size(); ++i){
+                        Accessor[i] = 0;
+                    }
+
                     for(size_t i = 0; i< gpu_candidates.size(); ++i){
                         if(i % num_of_work_group != index){
                             continue;
@@ -77,21 +104,14 @@ namespace gsp {
                     }
                 });
             });
-
             sycl::host_accessor HostAccessor{Buffer, sycl::read_write};
             std::vector<size_t> nums;
             nums.reserve(HostAccessor.size());
-            for (size_t I = 0; I < HostAccessor.size(); ++I) {
-                 nums.push_back(HostAccessor[I]);
+            for(size_t i = 0; i < HostAccessor.size(); ++i){
+                nums.push_back(HostAccessor[i]);
             }
-
-            auto frequent_items = convertToFrequentItems(candidates, nums);
-            update(frequent_items);
-
-            print(frequent_items);
-
+            return convertToFrequentItems(candidates, nums);
         }
-    private:
 
         gsp::map_items convertToFrequentItems(std::vector<gsp::item>& candidates, std::vector<size_t>& nums){
             gsp::map_items frequent_item;
