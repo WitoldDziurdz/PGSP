@@ -396,3 +396,5 @@ FodyWeavers.xsd
 /PGSP/*.txt
 # JetBrains Rider
 *.sln.iml
+*.idea
+cmake-build-debug/

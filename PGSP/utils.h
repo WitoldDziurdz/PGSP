@@ -17,11 +17,7 @@ namespace gsp {
 
     bool isSubSequence(const std::vector<std::string>& seq, const std::vector<std::string>& sub_seq);
 
-    std::set<char> getUniqItems(const std::vector<std::string>& sequence);
-
     std::vector<std::vector<item>> split(std::vector<gsp::item> items, size_t num_of_work_group);
-
-    std::set<char> generateUniqItems(const std::vector<gsp::item>& data_base);
 
     std::vector<gsp::item> generate_size_1_candidates(const std::vector<gsp::item>& database);
 

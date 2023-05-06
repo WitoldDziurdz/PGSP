@@ -20,7 +20,7 @@
 int main(int, char**) {
     using namespace std;
     constexpr size_t num_of_work_group = 12;
-    constexpr size_t min_support = 100;
+    constexpr size_t min_support = 2;
     gsp::DataParser data_parser;
     auto data_base = data_parser.getSimpleDataSet();
     auto flat_data_base = data_parser.getFlatSimpleDataSet();

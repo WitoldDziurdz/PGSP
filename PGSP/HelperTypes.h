@@ -71,13 +71,17 @@ namespace gsp {
             reset();
         }
 
-        std::string_view getLine() {
-            size_t index = current_index;
+        std::string_view operator[](size_t index) const {
             if (index + 1 == idx_.size()) {
-                return data_base_.substr(idx_[index]);
+                size_t nums = data_base_.size() - idx_[index];
+                return std::string_view(data_base_.data() + idx_[index], nums);
             }
             size_t nums = idx_[index + 1] - idx_[index];
-            return data_base_.substr(idx_[index], nums);
+            return std::string_view(data_base_.data() + idx_[index], nums);
+        }
+
+        std::string_view getLine() {
+            return this->operator[](current_index);
         }
 
         size_t nextLine() {
@@ -89,6 +93,10 @@ namespace gsp {
 
         void reset() {
             current_index = 0;
+        }
+
+        size_t size() {
+            return idx_.size();
         }
 
         class iterator {
@@ -162,12 +170,21 @@ namespace gsp {
             }
 
         private:
+            size_t find(std::string_view str_view, char ch) {
+                for (size_t i = 0; i < str_view.size(); ++i) {
+                    if (str_view[i] == ch) {
+                        return i;
+                    }
+                }
+                return std::string_view::npos;
+            }
+
             void update() {
                 if (!remaining_.empty()) {
-                    auto sep_pos = remaining_.find(',');
+                    auto sep_pos = find(remaining_,',');
                     if (sep_pos != std::string_view::npos) {
-                        current_ = remaining_.substr(0, sep_pos);
-                        remaining_ = remaining_.substr(sep_pos + 1);
+                        current_ = std::string_view(remaining_.data(), sep_pos);
+                        remaining_ = std::string_view(remaining_.data() + sep_pos + 1, remaining_.size() - sep_pos - 1);
                     }
                     else {
                         current_ = remaining_;

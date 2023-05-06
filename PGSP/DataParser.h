@@ -7,6 +7,59 @@
 
 namespace gsp {
 
+    inline std::string toString(const gsp::item& item) {
+        auto len = gsp::getSize(item) + item.size()*2;
+        std::string str;
+        str.reserve(len);
+        bool isFirst = true;
+        for (const auto& s : item) {
+            if (!isFirst) {
+                str += ',';
+            }
+            str += s;
+            isFirst = false;
+        }
+        return str;
+    }
+
+
+    inline std::pair<std::string, std::vector<size_t>> convert(const std::vector<gsp::item>& data_base) {
+        size_t len = std::accumulate(data_base.begin(), data_base.end(), 0, [](size_t s, const auto& item) {
+            return s + gsp::getSize(item);
+        });
+        std::string str;
+        str.reserve(len);
+        std::vector<size_t> ids;
+        ids.reserve(data_base.size());
+        size_t sum = 0;
+        for (size_t i = 0; i < data_base.size(); ++i) {
+            ids.push_back(sum);
+            auto line = toString(data_base[i]);
+            sum += line.size();
+            str += std::move(line);
+        }
+        ids.shrink_to_fit();
+        str.shrink_to_fit();
+        return { str, ids };
+    }
+
+    inline std::pair<std::string, std::vector<size_t>> convert(const std::vector<std::string>& items) {
+        size_t len = gsp::getSize(items);
+        std::string str;
+        str.reserve(len);
+        std::vector<size_t> ids;
+        ids.reserve(items.size());
+        size_t sum = 0;
+        for (size_t i = 0; i < items.size(); ++i) {
+            ids.push_back(sum);
+            sum += items[i].size();
+            str += items[i];
+        }
+        ids.shrink_to_fit();
+        str.shrink_to_fit();
+        return { str, ids };
+    }
+
     class DataParser {
 
     public:
@@ -23,44 +76,10 @@ namespace gsp {
             return data_base;
         }
 
-        std::string toString(const gsp::item& item) {
-            auto len = gsp::getSize(item) + item.size()*2;
-            std::string str;
-            str.reserve(len);
-            bool isFirst = true;
-            for (const auto& s : item) {
-                if (!isFirst) {
-                    str += ',';
-                }
-                str += s;
-                isFirst = false;
-            }
-            return str;
-        }
-
         std::pair<std::string, std::vector<size_t>> getFlatSimpleDataSet() {
             return convert(getSimpleDataSet());
         }
 
-        std::pair<std::string, std::vector<size_t>> convert(const std::vector<gsp::item>& data_base) {
-            size_t len = std::accumulate(data_base.begin(), data_base.end(), 0, [](size_t s, const auto& item) {
-                return s + gsp::getSize(item);
-            });
-            std::string str;
-            str.reserve(len);
-            std::vector<size_t> ids;
-            ids.reserve(data_base.size());
-            size_t sum = 0;
-            for (size_t i = 0; i < data_base.size(); ++i) {
-                ids.push_back(sum);
-                auto line = toString(data_base[i]);
-                sum += line.size();
-                str += std::move(line);
-            }
-            ids.shrink_to_fit();
-            str.shrink_to_fit();
-            return { str, ids };
-        }
 
         std::vector<std::vector<std::string>> readFromFile(const std::filesystem::path& filePath) {
             std::vector<std::vector<std::string>> result;

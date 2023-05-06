@@ -30,14 +30,6 @@ namespace gsp {
 		return false;
 	}
 
-	std::set<char> gsp::getUniqItems(const std::vector<std::string>& sequence) {
-		std::set<char> result;
-		for (const std::string& item : sequence) {
-			result.insert(item.begin(), item.end());
-		}
-		return result;
-	}
-
     std::vector<std::vector<gsp::item>> split(std::vector<gsp::item> items, size_t num_of_work_group) {
         if (num_of_work_group == 0) {
             throw std::invalid_argument("Number of work groups must be greater than 0");
@@ -52,16 +44,6 @@ namespace gsp {
 
         return result;
     }
-
-	std::set<char> generateUniqItems(const std::vector<gsp::item>& data_base) {
-		std::set<char> uniq_items;
-		for (const auto& items : data_base) {
-			for (const auto& item : items) {
-				uniq_items.insert(item.cbegin(), item.cend());
-			}
-		}
-		return uniq_items;
-	}
 
     std::vector<gsp::item> generate_size_1_candidates(const std::vector<gsp::item>& database) {
         std::set<gsp::item> candidates;
