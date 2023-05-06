@@ -95,7 +95,7 @@ namespace gsp {
             current_index = 0;
         }
 
-        size_t size() {
+        size_t size() const {
             return idx_.size();
         }
 

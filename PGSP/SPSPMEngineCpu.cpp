@@ -30,6 +30,7 @@ namespace gsp {
         size_t k = 3;
         while (!frequent_items.empty()) {
             candidates = generate_size_k_candidates(frequent_items, k);
+            std::cout << k << " canditates: " << candidates.size() << std::endl;
             items = gsp::split(std::move(candidates), nodes_.size());
             frequent_items = calculateFrequentItemsAsync(items);
             update(frequent_items);

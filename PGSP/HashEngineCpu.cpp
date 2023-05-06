@@ -32,6 +32,7 @@ namespace gsp {
 
         size_t k = 3;
         while (!prevFrequentItems.empty()) {
+            std::cout << k << " " << std::endl;
             frequentItems = std::move(prevFrequentItems);
             prevFrequentItems = asyncIterateAndCollect([&](HashNode& node) {
                 return node.iter_k(frequentItems, k);

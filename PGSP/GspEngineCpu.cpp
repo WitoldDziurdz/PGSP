@@ -29,6 +29,7 @@ namespace gsp {
 		size_t k = 3;
 		while (!frequent_items.empty()) {
 			items = generate_size_k_candidates(frequent_items, k);
+            std::cout << k << " canditates: " << items.size() << std::endl;
 			items = prune(frequent_items, items);
 			frequent_items = getFrequentItems(data_base_, items);
 			filter(frequent_items, min_support_);

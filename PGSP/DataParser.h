@@ -4,7 +4,7 @@
 #include <map>
 
 #include "utils.h"
-
+#include "profile.h"
 namespace gsp {
 
     inline std::string toString(const gsp::item& item) {

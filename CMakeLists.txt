@@ -19,3 +19,8 @@ target_link_libraries(cuda sycl)
 target_link_options(cuda PUBLIC -fsycl -fsycl-targets=nvptx64-nvidia-cuda)
 
 install(TARGETS cuda RUNTIME DESTINATION bin)
+
+set(DATA_FILES_DIR ${CMAKE_SOURCE_DIR}/PGSP/input)
+set(OUTPUT_DATA_FILES_DIR ${CMAKE_BINARY_DIR}/)
+
+file(COPY ${DATA_FILES_DIR} DESTINATION ${OUTPUT_DATA_FILES_DIR})

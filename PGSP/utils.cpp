@@ -4,6 +4,8 @@
 #include <unordered_map>
 #include <string_view>
 
+#include "profile.h"
+
 namespace gsp {
 
 	bool isContain(const std::string_view item, const std::string_view sub_item) {
