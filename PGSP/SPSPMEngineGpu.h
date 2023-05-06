@@ -29,7 +29,7 @@ namespace gsp {
             cl::sycl::queue queue(device_selector);
             std::cout << "Running on " << queue.get_device().get_info<cl::sycl::info::device::name>() << "\n";
 
-           
+
         }
     private:
         const size_t num_of_work_group_;

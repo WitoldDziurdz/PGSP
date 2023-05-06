@@ -12,7 +12,9 @@
 #include "SPSPMEngineGpu.h"
 #include "utils.h"
 #include "HelperTypes.h"
-#include <CL/sycl.hpp>
+
+#include <sycl/sycl.hpp>
+#include <span>
 
 
 int main(int, char**) {
