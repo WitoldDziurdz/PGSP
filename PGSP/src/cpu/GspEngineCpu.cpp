@@ -33,6 +33,7 @@ namespace gsp {
 			items = prune(frequent_items, items);
 			frequent_items = getFrequentItems(data_base_, items);
 			filter(frequent_items, min_support_);
+            std::cout << k << " frequent_items: " << frequent_items.size() << std::endl;
 			update(frequent_items);
 			k++;
 		}

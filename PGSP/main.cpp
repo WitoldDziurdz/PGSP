@@ -20,18 +20,18 @@
 int main(int, char**) {
     using namespace std;
     constexpr size_t num_of_work_group = 12;
-    constexpr size_t min_support = 2;
+    constexpr size_t min_support = 10000;
     gsp::DataParser data_parser;
-    const vector<gsp::item> data_base = data_parser.getSimpleDataSet();
+    //const vector<gsp::item> data_base = data_parser.getSimpleDataSet();
     std::filesystem::path inputPath = "./input/data_set1.txt";
-    //const vector<gsp::item> data_base = DataParser.readFromFile(inputPath);
-
+    const vector<gsp::item> data_base = data_parser.readFromFile(inputPath);
+/*
     gsp::GspEngineCpu gsp_engine(data_base, min_support);
     gsp_engine.calculate();
     auto items = gsp_engine.getItems();
     //gsp::print(items);
     gsp_engine.writeToFile();
-
+*/
     gsp::HashEngineCpu hash_engine(data_base, min_support, num_of_work_group);
     hash_engine.calculate();
     auto hash_items = hash_engine.getItems();

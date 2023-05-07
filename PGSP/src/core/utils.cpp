@@ -100,29 +100,17 @@ namespace gsp {
         return result;
     }
 
-    bool isCanBeCandidate(const gsp::item& first, const gsp::item& second) {
-        auto len1 = std::accumulate(first.begin(), first.end(), 0, [](size_t acc, const auto& s) {
-            return acc + s.size();
-        });
-        auto len2 = std::accumulate(second.begin(), second.end(), 0, [](size_t acc, const auto& s) {
-            return acc + s.size();
-        });
-
-        if (len1 != len2) {
-            return false;
-        }
-
+    bool isCanBeCandidate(const gsp::item& first, const gsp::item& second, size_t len) {
         ItemIteartor it1(first);
         ItemIteartor it2(second);
         ++it1;
-        for (size_t i = 1; i < len1; ++i) {
+        for (size_t i = 1; i < len-1; ++i) {
             if ((*it1) != (*it2)) {
                 return false;
             }
             ++it1;
             ++it2;
         }
-
         return true;
     }
 
@@ -146,7 +134,7 @@ namespace gsp {
             const auto& element1 = pr1.first;
              for (const auto& pr2 : frequent_items) {
                     const auto& element2 = pr2.first;
-                    if (isCanBeCandidate(element1, element2)) {
+                    if (isCanBeCandidate(element1, element2, k-1)) {
                         gsp::item candidate = element1;
                         auto pr = element2.back().back();
                         if (needMerge(element1, element2)) {

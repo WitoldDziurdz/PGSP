@@ -33,6 +33,7 @@ namespace gsp {
             std::cout << k << " canditates: " << candidates.size() << std::endl;
             items = gsp::split(std::move(candidates), nodes_.size());
             frequent_items = calculateFrequentItemsAsync(items);
+            std::cout << k << " frequent_items: " << frequent_items.size() << std::endl;
             update(frequent_items);
             k++;
         }

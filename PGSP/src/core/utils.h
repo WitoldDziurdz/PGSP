@@ -25,7 +25,7 @@ namespace gsp {
 
     std::string flatItem(const gsp::item& element);
 
-    bool isCanBeCandidate(const gsp::item& first, const gsp::item& second);
+    bool isCanBeCandidate(const gsp::item& first, const gsp::item& second, size_t len);
 
     bool needMerge(const gsp::item& element1, const gsp::item& element2);
 

@@ -52,6 +52,7 @@ namespace gsp {
                 candidates = generate_size_k_candidates(frequent_items, k);
                 std::cout << k << " canditates: " << candidates.size() << std::endl;
                 frequent_items = getFrequentItems(queue, data_buffer, ids_buffer, candidates);
+                std::cout << k << " frequent_items: " << frequent_items.size() << std::endl;
                 update(frequent_items);
                 k++;
             }
