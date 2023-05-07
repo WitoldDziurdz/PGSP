@@ -9,7 +9,7 @@
 #include <fstream>
 #include <unordered_map>
 
-#include "HelperTypes.h"
+#include "helper_types.h"
 
 namespace gsp {
 

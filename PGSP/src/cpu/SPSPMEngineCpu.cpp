@@ -3,7 +3,7 @@
 #include <string>
 #include <map>
 #include "SimpleNode.h"
-#include "profile.h"
+#include "../core/profile.h"
 
 namespace gsp {
 

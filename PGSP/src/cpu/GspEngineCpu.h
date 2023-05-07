@@ -2,8 +2,8 @@
 #include <string>
 #include <vector>
 
-#include "utils.h"
-#include "IEngine.h"
+#include "../core/utils.h"
+#include "../IEngine.h"
 
 namespace gsp {
 

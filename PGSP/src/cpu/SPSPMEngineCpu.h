@@ -9,9 +9,9 @@
 #include <algorithm>
 #include <future>
 
-#include "utils.h"
+#include "../core/utils.h"
 #include "SimpleNode.h"
-#include "IEngine.h"
+#include "../IEngine.h"
 
 namespace gsp {
     class SPSPMEngineCpu : public IEngine {

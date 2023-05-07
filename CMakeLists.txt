@@ -9,11 +9,11 @@ set(CMAKE_CXX_COMPILER "clang++")
 
 find_package(LLVM REQUIRED CONFIG)
 
-add_executable(cuda PGSP/main.cpp PGSP/DataParser.h
-        PGSP/GspEngineCpu.cpp PGSP/GspEngineCpu.h PGSP/HashEngineCpu.cpp PGSP/HashEngineCpu.h
-        PGSP/HashNode.cpp PGSP/HashNode.h PGSP/HelperTypes.h PGSP/IEngine.h PGSP/profile.cpp PGSP/profile.h
-        PGSP/SimpleNode.h PGSP/SPSPMEngineCpu.h PGSP/SPSPMEngineCpu.cpp PGSP/SPSPMEngineGpu.h PGSP/sycl_utiils.h
-        PGSP/SyclQueue.h PGSP/utils.cpp PGSP/utils.h)
+add_executable(cuda PGSP/main.cpp PGSP/src/core/data_parser.h
+        PGSP/src/cpu/GspEngineCpu.cpp PGSP/src/cpu/GspEngineCpu.h PGSP/src/cpu/HashEngineCpu.cpp PGSP/src/cpu/HashEngineCpu.h
+        PGSP/src/cpu/HashNode.cpp PGSP/src/cpu/HashNode.h PGSP/src/core/helper_types.h PGSP/src/IEngine.h PGSP/src/core/profile.cpp PGSP/src/core/profile.h
+        PGSP/src/cpu/SimpleNode.h PGSP/src/cpu/SPSPMEngineCpu.h PGSP/src/cpu/SPSPMEngineCpu.cpp PGSP/src/gpu/SPSPMEngineGpu.h PGSP/src/core/sycl_utiils.h
+        PGSP/src/core/utils.cpp PGSP/src/core/utils.h)
 target_compile_options(cuda PUBLIC -fsycl -fsycl-targets=nvptx64-nvidia-cuda)
 target_link_libraries(cuda sycl)
 target_link_options(cuda PUBLIC -fsycl -fsycl-targets=nvptx64-nvidia-cuda)

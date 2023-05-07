@@ -7,6 +7,28 @@
 #include "profile.h"
 namespace gsp {
 
+
+    size_t getMaxSizeOfLine(const std::vector<gsp::item>& data_base) {
+        auto it = std::max_element(data_base.begin(), data_base.end(), [](const auto& a, const auto& b) {
+            return gsp::getSize(a) < gsp::getSize(b);
+        });
+        return getSize(*it);
+    }
+
+    std::vector<gsp::item> convert(gsp::map_items frequent_items) {
+        std::vector<gsp::item> result;
+        result.reserve(frequent_items.size());
+
+        std::transform(
+                frequent_items.begin(), frequent_items.end(),
+                std::back_inserter(result),
+                [](gsp::map_items::value_type& item) {
+                    return std::move(item.first);
+                }
+        );
+        return result;
+    }
+
     inline std::string toString(const gsp::item& item) {
         auto len = gsp::getSize(item) + item.size()*2;
         std::string str;

@@ -4,7 +4,7 @@
 #include <map>
 
 #include "HashNode.h"
-#include "profile.h"
+#include "../core/profile.h"
 
 namespace gsp {
 

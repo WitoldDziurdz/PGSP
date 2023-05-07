@@ -4,9 +4,9 @@
 #include <unordered_map>
 #include <future>
 
-#include "utils.h"
+#include "../core/utils.h"
 #include "HashNode.h"
-#include "IEngine.h"
+#include "../IEngine.h"
 
 namespace gsp {
 	class HashEngineCpu : public IEngine{

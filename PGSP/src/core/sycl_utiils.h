@@ -9,11 +9,36 @@
 #include <fstream>
 #include <unordered_map>
 
-#include "HelperTypes.h"
+#include "helper_types.h"
 #include "utils.h"
 
 namespace gsp {
 namespace gpu {
+
+    template<typename Iterator>
+    void sort(Iterator begin, Iterator end) {
+        if (begin == end || std::next(begin) == end) {
+            return;
+        }
+
+        bool swapped;
+        Iterator last_unsorted = end;
+
+        do {
+            swapped = false;
+            Iterator current = begin;
+
+            for (Iterator next = std::next(current); next != last_unsorted; current = next, ++next) {
+                if (*next < *current) {
+                    std::iter_swap(current, next);
+                    swapped = true;
+                }
+            }
+
+            last_unsorted = current;
+        } while (swapped);
+    }
+
 
     bool isContain(const std::string_view item, const std::string_view sub_item) {
         for (char c : sub_item) {

@@ -2,10 +2,10 @@
 #include <vector>
 #include <map>
 
-#include "utils.h"
+#include "../core/utils.h"
 #include "HashNode.h"
 #include "GspEngineCpu.h"
-#include "profile.h"
+#include "../core/profile.h"
 
 namespace gsp {
 
