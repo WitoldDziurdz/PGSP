@@ -15,6 +15,7 @@
 #include "../core/sycl_utiils.h"
 #include "../core/profile.h"
 #include "../core/helper_types.h"
+#include "../core/data_parser.h"
 
 namespace gsp {
     class SPSPMEngineGpu : public IEngine {
@@ -99,75 +100,6 @@ namespace gsp {
             sycl::host_accessor ids_candidates_accessor{ids_candidates_buffer, sycl::read_write};
             FlatArrayWrapper results_candidates = FlatArrayWrapper(data_candidates_accessor.get_pointer(),
                                                                 ids_candidates_accessor.get_pointer(), rows, cols, string_size);
-            std::set<gsp::item> candidates;
-            for(size_t row = 0; row < results_candidates.rows(); row++){
-                size_t max_col =  ids_candidates_accessor[row];
-                for(size_t col = 0; col < max_col; col++){
-                    std::string_view view = results_candidates.get(row, col);
-                    gsp::item item;
-                    item.reserve(view.size());
-                    for(std::string_view el : gsp::FlatElement(view)){
-                        item.emplace_back(el);
-                    }
-                    candidates.insert(item);
-                }
-            }
-            return { candidates.begin(), candidates.end() };
-        }
-
-        inline std::vector<gsp::item> generate_k2_candidates(sycl::queue& queue, const std::vector<gsp::item>& data_base) {
-            auto flat_data_base = convert(data_base);
-            size_t nums_in_line = data_base.size() * (data_base.size() - 1);
-            std::string_view data = flat_data_base.first;
-            std::span<size_t> ids(flat_data_base.second.data(), flat_data_base.second.size());
-            sycl::buffer<char, 1> data_buffer(data.data(), data.size());
-            sycl::buffer<size_t, 1> ids_buffer(ids.data(), ids.size());
-            const size_t rows = ids_buffer.size();
-            const size_t cols = nums_in_line;
-            constexpr size_t string_size = 3;
-            FlatArray flat_candidates(rows, cols, string_size);
-
-            sycl::buffer<char, 1> data_candidates_buffer(flat_candidates.data(), flat_candidates.size());
-            sycl::buffer<size_t , 1> ids_candidates_buffer(flat_candidates.rowSizes(), flat_candidates.rows());
-
-            queue.submit([&](sycl::handler& cgh) {
-                sycl::accessor data_access{data_buffer, cgh, sycl::read_only};
-                sycl::accessor ids_access{ids_buffer, cgh, sycl::read_only};
-                sycl::accessor data_candidates_accessor{data_candidates_buffer, cgh, sycl::write_only};
-                sycl::accessor ids_candidates_accessor{ids_candidates_buffer, cgh, sycl::write_only};
-                cgh.parallel_for<class gen_can_k2>(sycl::range<1>(rows), [=](sycl::id<1> index) {
-                    std::string_view gpu_data = std::string_view(data_access.get_pointer(), data_access.size());
-                    sycl::span<size_t> gpu_ids(static_cast<size_t*>(ids_access.get_pointer()), ids_access.size());
-                    DataBase gpu_dataBase(gpu_data, gpu_ids);
-
-                    FlatArrayWrapper flat_candidates = FlatArrayWrapper(data_candidates_accessor.get_pointer(),
-                                                                        ids_candidates_accessor.get_pointer(), rows, cols, string_size);
-                    auto element1 = gpu_dataBase[index];
-                    for (auto element2 : gpu_dataBase) {
-                        if (element1 != element2) {
-                            std::array<char, 3> data;
-                            data[0] = *element1.begin();
-                            data[1] = *element2.begin();
-                            data[2] = ' ';
-                            if (data[0] > data[1]) {
-                                std::swap(data[0], data[1]);
-                            }
-                            std::string_view str = string_view(data.data(), data.size());
-                            flat_candidates.insert(index, str);
-                        }
-                        std::array<char, 3> data;
-                        data[0] = *element1.begin();
-                        data[1] = ',';
-                        data[2] = *element2.begin();
-                        std::string_view str = string_view(data.data(), data.size());
-                        flat_candidates.insert(index, str);
-                    }
-                });
-            });
-            sycl::host_accessor data_candidates_accessor{data_candidates_buffer, sycl::read_write};
-            sycl::host_accessor ids_candidates_accessor{ids_candidates_buffer, sycl::read_write};
-            FlatArrayWrapper results_candidates = FlatArrayWrapper(data_candidates_accessor.get_pointer(),
-                                                                   ids_candidates_accessor.get_pointer(), rows, cols, string_size);
             std::set<gsp::item> candidates;
             for(size_t row = 0; row < results_candidates.rows(); row++){
                 size_t max_col =  ids_candidates_accessor[row];

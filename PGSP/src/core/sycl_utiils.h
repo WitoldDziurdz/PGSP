@@ -82,5 +82,43 @@ namespace gpu {
         return false;
     }
 
+    size_t getHash(ItemIteartor it, size_t k) {
+        size_t sum = 0;
+        constexpr size_t offset = 8;
+        for (size_t i = 0; i < k; ++i) {
+            sum += (static_cast<size_t>(*it) << offset);
+            ++it;
+        }
+        return sum;
+    }
+
+    size_t getHash(std::string_view str, size_t k) {
+        size_t sum = 0;
+        constexpr size_t offset = 8;
+        for (size_t i = 0; i < k; ++i) {
+            sum += (static_cast<size_t>(str[i]) << offset);
+        }
+        return sum;
+    }
+
+    bool isMine(size_t h, size_t index, size_t num_of_work_group){
+        return ((h % num_of_work_group) == index);
+    }
+
+    size_t getId(char ch, size_t num_of_work_group) {
+        return static_cast<size_t>(ch) % num_of_work_group;
+    }
+
+    size_t getCount(DataBase& gpu_dataBase, std::string_view candidate){
+        size_t support = 0;
+        for(size_t j = 0; j < gpu_dataBase.size(); ++j) {
+            auto line = gpu_dataBase[j];
+            if (gsp::gpu::isSubSequence(line, candidate)) {
+                support++;
+            }
+        }
+        return support;
+    }
+
 }
 }

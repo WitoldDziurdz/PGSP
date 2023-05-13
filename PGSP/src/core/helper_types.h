@@ -283,9 +283,9 @@ namespace gsp {
 
         bool insert(size_t row, std::string_view str) {
             if(!find(row, str)){
-                size_t& current_col = row_sizes_[row];
+                size_t current_col = row_sizes_[row];
                 set(row, current_col, str);
-                current_col++;
+                row_sizes_[row]++;
                 return true;
             }
             return false;
@@ -319,6 +319,10 @@ namespace gsp {
             for(size_t i = 0; i < len; ++i) {
                 target[i] = str[i];
             }
+        }
+
+        size_t size(size_t row) {
+            return row_sizes_[row];
         }
 
         char* data() {

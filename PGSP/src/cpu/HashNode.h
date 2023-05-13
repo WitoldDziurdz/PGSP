@@ -33,8 +33,6 @@ namespace gsp {
 
 		bool isMine(const std::string& str);
 
-		std::vector<size_t> getIds(const std::string& str);
-
 		size_t getId(char ch);
 
 		const std::vector<gsp::item>& data_base_;
