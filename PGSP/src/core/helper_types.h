@@ -159,7 +159,11 @@ namespace gsp {
             }
 
             std::string_view operator*() const {
-                return current_;
+                auto sep_pos = find(current_,' ');
+                if(sep_pos == std::string_view::npos){
+                    return current_;
+                }
+                return std::string_view(current_.data(), sep_pos);;
             }
 
             bool operator==(const iterator& other) const {
@@ -171,7 +175,7 @@ namespace gsp {
             }
 
         private:
-            size_t find(std::string_view str_view, char ch) {
+            static size_t find(std::string_view str_view, char ch) {
                 for (size_t i = 0; i < str_view.size(); ++i) {
                     if (str_view[i] == ch) {
                         return i;

@@ -19,13 +19,13 @@ namespace gsp {
 		auto frequent_items = getFrequentItems(data_base_, items);
 		filter(frequent_items, min_support_);
 		update(frequent_items);
-/*
+
 		items = generate_size_2_candidates(frequent_items);
 		items = prune(frequent_items, items);
 		frequent_items = getFrequentItems(data_base_, items);
 		filter(frequent_items, min_support_);
 		update(frequent_items);
-
+/*
 		size_t k = 3;
 		while (!frequent_items.empty()) {
 			items = generate_size_k_candidates(frequent_items, k);
