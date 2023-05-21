@@ -265,18 +265,22 @@ namespace gsp {
 
                     for(size_t i = 0; i < gpu_frequent_items.size(); ++i) {
                         auto transaction1 = gpu_frequent_items[i];
-                        //std::string_view sub_transaction1 = std::string_view(transaction1.begin() + 1, transaction1.size() - 1);
-                        //auto h1 = gpu::getHash(sub_transaction1, sub_transaction1.size());
-
+                        std::string_view sub_transaction1 = std::string_view(transaction1.begin() + 1, transaction1.size() - 1);
+                        auto h1 = gpu::getHash(sub_transaction1, sub_transaction1.size());
+                        if(!gpu::isMine(h1, index, rows)){
+                            continue;
+                        }
                         for(size_t j = 0; j < gpu_frequent_items.size(); ++j) {
                             auto transaction2 = gpu_frequent_items[j];
-                            //std::string_view sub_transaction2 = std::string_view(transaction2.begin(), transaction2.size() - 1);
-                            //auto h2 = gpu::getHash(sub_transaction2, sub_transaction2.size());
-                            char ch = transaction2.back();
-                            char* data1 = flat_candidates.getEntry(index);
-                            gpu::merge(data1, transaction1, ch, flat_candidates.string_size());
-                            char* data2 = flat_candidates.getEntry(index);
-                            gpu::insert(data2, transaction1, ch, flat_candidates.string_size());
+                            std::string_view sub_transaction2 = std::string_view(transaction2.begin(), transaction2.size() - 1);
+                            auto h2 = gpu::getHash(sub_transaction2, sub_transaction2.size());
+                            if((h1 == h2) && (gpu::isCanBeCandidate(sub_transaction1, sub_transaction2))) {
+                                char ch = transaction2.back();
+                                char *data1 = flat_candidates.getEntry(index);
+                                gpu::merge(data1, transaction1, ch, flat_candidates.string_size());
+                                char *data2 = flat_candidates.getEntry(index);
+                                gpu::insert(data2, transaction1, ch, flat_candidates.string_size());
+                            }
                         }
                     }
 

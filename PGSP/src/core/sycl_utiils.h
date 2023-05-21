@@ -115,17 +115,23 @@ namespace gpu {
     }
 
     bool isCanBeCandidate(std::string_view first, std::string_view second) {
-        return true;
-    }
-
-    size_t getRealSize(std::string_view str){
-        size_t i = 0;
-        for(i = 0; i < str.size(); ++i){
-            if(str[i] == ' '){
-                return i+1;
+        auto i = first.begin(), j = second.begin();
+        while (i != first.end() && j != second.end()) {
+            if (*i == ',') {
+                ++i;
+            }
+            if (*j == ',') {
+                ++j;
+            }
+            if (i != first.end() && j != second.end()) {
+                if (*i != *j) {
+                    return false;
+                }
+                ++i;
+                ++j;
             }
         }
-        return i+1;
+        return true;
     }
 
     inline size_t getHash(ItemIteartor it, size_t k) {
@@ -142,6 +148,9 @@ namespace gpu {
         size_t sum = 0;
         constexpr size_t offset = 8;
         for (size_t i = 0; i < k; ++i) {
+            if(str[i] == ',' || str[i] == ' '){
+                continue;
+            }
             sum += (static_cast<size_t>(str[i]) << offset);
         }
         return sum;
