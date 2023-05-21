@@ -156,11 +156,7 @@ namespace gsp {
                     DataBase gpu_candidates(gpu_data_candidates, gpu_ids_candidates);
 
                     auto candidate = gpu_candidates[index];
-                    for(auto line : gpu_dataBase){
-                        if(gsp::gpu::isSubSequence(line, candidate)){
-                            Accessor[index]++;
-                        }
-                    }
+                    Accessor[index] = gpu::getCount(gpu_dataBase, candidate);
                 });
             });
             sycl::host_accessor HostAccessor{Buffer, sycl::read_only};

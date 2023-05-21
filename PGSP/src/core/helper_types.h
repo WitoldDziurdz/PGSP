@@ -142,7 +142,6 @@ namespace gsp {
     };
     
 
-
     class FlatElement {
     public:
         FlatElement(std::string_view s) : data(s) {}
@@ -159,11 +158,7 @@ namespace gsp {
             }
 
             std::string_view operator*() const {
-                auto sep_pos = find(current_,' ');
-                if(sep_pos == std::string_view::npos){
-                    return current_;
-                }
-                return std::string_view(current_.data(), sep_pos);;
+                return delete_spaces(current_);
             }
 
             bool operator==(const iterator& other) const {
@@ -175,14 +170,6 @@ namespace gsp {
             }
 
         private:
-            static size_t find(std::string_view str_view, char ch) {
-                for (size_t i = 0; i < str_view.size(); ++i) {
-                    if (str_view[i] == ch) {
-                        return i;
-                    }
-                }
-                return std::string_view::npos;
-            }
 
             void update() {
                 if (!remaining_.empty()) {
@@ -213,6 +200,16 @@ namespace gsp {
             return iterator({});
         }
 
+        std::string_view getLastElement() {
+            size_t pos =rfind(data, ',');
+            if (pos != std::string_view::npos) {
+                auto str = std::string_view(data.data() + pos + 1, data.size() - pos - 1);
+                return delete_spaces(str);
+            } else {
+                return delete_spaces(data);
+            }
+        }
+
         size_t size() const {
             size_t count = 0;
             for (const auto& _ : *this) {
@@ -222,7 +219,34 @@ namespace gsp {
         }
 
 
+
     private:
+        static size_t find(std::string_view str_view, char ch) {
+            for (size_t i = 0; i < str_view.size(); ++i) {
+                if (str_view[i] == ch) {
+                    return i;
+                }
+            }
+            return std::string_view::npos;
+        }
+
+        static size_t rfind(std::string_view str_view, char ch) {
+            for (size_t i = str_view.size(); i > 0; --i) {
+                if (str_view[i - 1] == ch) {
+                    return i - 1;
+                }
+            }
+            return std::string_view::npos;
+        }
+
+        static std::string_view delete_spaces(std::string_view str){
+            auto sep_pos = find(str,' ');
+            if(sep_pos == std::string_view::npos){
+                return str;
+            }
+            return std::string_view(str.data(), sep_pos);
+        }
+
         std::string_view data;
     };
 
@@ -248,6 +272,10 @@ namespace gsp {
             return rows_ * cols_ * string_size_;
         }
 
+        size_t string_size() const{
+            return string_size_;
+        }
+
     protected:
         const size_t rows_;
         const size_t cols_;
@@ -257,14 +285,15 @@ namespace gsp {
     class FlatArray : public FlatArrayInterface{
         public:
             FlatArray(size_t rows, size_t cols, size_t string_size)
-                    : FlatArrayInterface(rows, cols,string_size),
-                      data_(std::make_unique<char[]>(rows * cols * string_size)) {
+                    : FlatArrayInterface(rows, cols,string_size) {
+                data_.resize(rows * cols * string_size);
                 row_sizes.resize(rows);
                 std::fill(row_sizes.begin(), row_sizes.end(), 0);
+                std::fill(data_.begin(), data_.end(), ' ');
             }
 
             char* data() {
-                return data_.get();
+                return data_.data();
             }
 
             size_t* rowSizes() {
@@ -273,7 +302,7 @@ namespace gsp {
 
 
         private:
-            std::unique_ptr<char[]> data_;
+            std::vector<char> data_;
             std::vector<size_t> row_sizes;
         };
 
@@ -295,6 +324,13 @@ namespace gsp {
             return false;
         }
 
+        char* getEntry(size_t row){
+            size_t current_col = row_sizes_[row];
+            row_sizes_[row]++;
+            char* target = &data_[getOffset(row, current_col)];
+            return target;
+        }
+
         bool find(size_t row, std::string_view str){
             size_t current_size = row_sizes_[row];
             for(size_t col = 0; col < current_size; ++col){
@@ -311,7 +347,8 @@ namespace gsp {
             size_t len = string_size_;
             for(size_t i = 0; i < len; ++i){
                 if(source[i] == ' '){
-                    len = i + 1;
+                    len = i;
+                    break;
                 }
             }
             return std::string_view(source, len);
@@ -320,8 +357,12 @@ namespace gsp {
         void set(size_t row, size_t col, std::string_view str) {
             char* target = &data_[getOffset(row, col)];
             auto len = std::min(string_size_, str.size());
-            for(size_t i = 0; i < len; ++i) {
+            size_t i = 0;
+            for(i = 0; i < len; ++i) {
                 target[i] = str[i];
+            }
+            for(; i < string_size_; ++i) {
+                target[i] = ' ';
             }
         }
 

@@ -51,6 +51,12 @@ int main(int, char**) {
     gpu_simple_engine.writeToFile();
 */
 
+    gsp::SPSPMEngineGpu gpu_simple_engine(data_base, min_support, num_of_work_group);
+    gpu_simple_engine.calculate();
+    auto gpu_simple_items = gpu_simple_engine.getItems();
+    gsp::print(gpu_simple_items);
+    gpu_simple_engine.writeToFile();
+
     gsp::HashEngineGpu gpu_hash_engine(data_base, min_support, num_of_work_group);
     gpu_hash_engine.calculate();
     auto gpu_hash_items = gpu_hash_engine.getItems();
