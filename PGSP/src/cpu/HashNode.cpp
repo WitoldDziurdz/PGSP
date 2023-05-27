@@ -41,7 +41,7 @@ namespace gsp {
             auto h = getHash(it, transaction.size());
 			for (const auto& element : transaction) {
 				for (const auto& ev : element) {
-					if (isMine(ev)) {
+					if (isMine(static_cast<size_t>(ev))) {
 						std::string str;
 						str += ev;
 						gsp::item seq = { str };
@@ -57,7 +57,7 @@ namespace gsp {
 		std::set<gsp::item> candidates;
 		for (const auto& pr1 : frequent_items) {
 			const std::string& element1 = *pr1.first.begin();
-			if (isMine(element1)) {
+			if (isMine(static_cast<size_t>(element1[0]))) {
 				for (const auto& pr2 : frequent_items) {
 					const std::string& element2 = *pr2.first.begin();
 					if (element1 != element2) {
@@ -121,16 +121,4 @@ namespace gsp {
         }
         return sum;
     }
-
-	bool HashNode::isMine(char ch) {
-		return getId(ch) == index_node_;
-	}
-
-	bool HashNode::isMine(const std::string& str) {
-		return isMine(str[0]);
-	}
-
-	size_t HashNode::getId(char ch) {
-		return static_cast<size_t>(ch) % max_number_of_nodes_;
-	}
 }

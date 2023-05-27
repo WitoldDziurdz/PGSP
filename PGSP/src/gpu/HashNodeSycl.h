@@ -128,16 +128,6 @@ namespace gsp {
             return (h % max_number_of_nodes_) == index_node_;
         }
 
-        size_t getHash(ItemIteartor it, size_t k) {
-            size_t sum = 0;
-            constexpr size_t offset = 8;
-            for (size_t i = 0; i < k; ++i) {
-                sum += (static_cast<size_t>(*it) << offset);
-                ++it;
-            }
-            return sum;
-        }
-
 		const std::vector<gsp::item>& data_base_;
 		const size_t index_node_;
 		const size_t min_support_;

@@ -344,28 +344,4 @@ namespace gsp {
         size_t* row_sizes_;
         char* data_;
     };
-
-    class StaticVector {
-    public:
-        StaticVector(size_t* data, size_t max_size) : data_(data), max_size_(max_size), size_(0) {}
-
-        void push_back(size_t element) {
-            if (size_ < max_size_) {
-                data_[size_++] = element;
-            }
-        }
-
-        size_t& operator[](size_t index) {
-            return data_[index];
-        }
-
-        void clear() {
-            size_ = 0;
-        }
-
-    private:
-        size_t* data_;
-        size_t max_size_;
-        size_t size_;
-    };
 }

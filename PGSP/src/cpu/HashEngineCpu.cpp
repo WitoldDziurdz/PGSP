@@ -18,19 +18,21 @@ namespace gsp {
 
     void HashEngineCpu::calculate() {
         TotalDuration timer(name_ + " - total time speneded on calculating:");
+        size_t k = 1;
         auto frequentItems = asyncIterateAndCollect([&](HashNode& node) {
             return node.iter_1();
         });
-
+        std::cout << k << " frequent_items: " << frequentItems.size() << std::endl;
         update(frequentItems);
 
+        k = 2;
         auto prevFrequentItems = asyncIterateAndCollect([&](HashNode& node) {
             return node.iter_2(frequentItems);
         });
-
+        std::cout << k << " frequent_items: " << prevFrequentItems.size() << std::endl;
         update(prevFrequentItems);
 
-        size_t k = 3;
+        k = 3;
         while (!prevFrequentItems.empty()) {
             frequentItems = std::move(prevFrequentItems);
             prevFrequentItems = asyncIterateAndCollect([&](HashNode& node) {

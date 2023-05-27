@@ -7,14 +7,6 @@
 #include "profile.h"
 namespace gsp {
 
-
-    size_t getMaxSizeOfLine(const std::vector<gsp::item>& data_base) {
-        auto it = std::max_element(data_base.begin(), data_base.end(), [](const auto& a, const auto& b) {
-            return gsp::getSize(a) < gsp::getSize(b);
-        });
-        return getSize(*it);
-    }
-
     std::vector<gsp::item> convert(gsp::map_items frequent_items) {
         std::vector<gsp::item> result;
         result.reserve(frequent_items.size());
@@ -65,23 +57,6 @@ namespace gsp {
         return { str, ids };
     }
 
-    inline std::pair<std::string, std::vector<size_t>> convert(const std::vector<std::string>& items) {
-        size_t len = gsp::getSize(items);
-        std::string str;
-        str.reserve(len);
-        std::vector<size_t> ids;
-        ids.reserve(items.size());
-        size_t sum = 0;
-        for (size_t i = 0; i < items.size(); ++i) {
-            ids.push_back(sum);
-            sum += items[i].size();
-            str += items[i];
-        }
-        ids.shrink_to_fit();
-        str.shrink_to_fit();
-        return { str, ids };
-    }
-
     class DataParser {
 
     public:
@@ -97,11 +72,6 @@ namespace gsp {
             };
             return data_base;
         }
-
-        std::pair<std::string, std::vector<size_t>> getFlatSimpleDataSet() {
-            return convert(getSimpleDataSet());
-        }
-
 
         std::vector<std::vector<std::string>> readFromFile(const std::filesystem::path& filePath) {
             std::vector<std::vector<std::string>> result;

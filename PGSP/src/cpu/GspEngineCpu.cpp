@@ -15,20 +15,24 @@ namespace gsp {
 
 	void GspEngineCpu::calculate() {
 		TotalDuration timer(name_ + " - total time speneded on calculating:");
+        size_t k = 1;
 		auto items = generate_size_1_candidates(data_base_);
 		auto frequent_items = getFrequentItems(data_base_, items);
 		filter(frequent_items, min_support_);
+        std::cout << k << " frequent_items: " << frequent_items.size() << std::endl;
 		update(frequent_items);
 
+        k = 2;
 		items = generate_size_2_candidates(frequent_items);
 		items = prune(frequent_items, items);
 		frequent_items = getFrequentItems(data_base_, items);
 		filter(frequent_items, min_support_);
+        std::cout << k << " frequent_items: " << frequent_items.size() << std::endl;
 		update(frequent_items);
-		size_t k = 3;
+
+		k = 3;
 		while (!frequent_items.empty()) {
 			items = generate_size_k_candidates(frequent_items, k);
-            std::cout << k << " canditates: " << items.size() << std::endl;
 			items = prune(frequent_items, items);
 			frequent_items = getFrequentItems(data_base_, items);
 			filter(frequent_items, min_support_);
