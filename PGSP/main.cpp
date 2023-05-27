@@ -4,6 +4,7 @@
 #include <set>
 #include <queue>
 #include <filesystem>
+#include <memory>
 
 #include "src/core/data_parser.h"
 #include "src/cpu/GspEngineCpu.h"
@@ -11,53 +12,45 @@
 #include "src/cpu/SPSPMEngineCpu.h"
 #include "src/gpu/SPSPMEngineGpu.h"
 #include "src/gpu/HashEngineGpu.h"
-#include "src/core/utils.h"
-#include "src/core/helper_types.h"
+#include "src/core/args_parser.h"
 
-#include <sycl/sycl.hpp>
-#include <span>
-
-
-int main(int, char**) {
+int main(int argc, char *argv[]) {
     using namespace std;
+
+    auto args = gsp::parseArgs(argc, argv);
+    auto debug_logs = gsp::checkDebugFlag(args);
+    auto info_logs = gsp::checkInfoFlag(args);
+    auto console_print = gsp::checkConsolePrint(args);
+    auto [write_to_file, file_name] = gsp::checkWriteToFile(args);
+    auto [gsp_status, gsp_type] = gsp::checkGspTypes(args);
+
+
     constexpr size_t num_of_work_group = 12;
     constexpr size_t min_support = 52;
     gsp::DataParser data_parser;
-   // const vector<gsp::item> data_base = data_parser.getSimpleDataSet();
+    // const vector<gsp::item> data_base = data_parser.getSimpleDataSet();
     std::filesystem::path inputPath = "./input/data_set0.txt";
     const vector<gsp::item> data_base = data_parser.readFromFile(inputPath);
 
 
-    gsp::GspEngineCpu gsp_engine(data_base, min_support);
-    gsp_engine.calculate();
-    auto items = gsp_engine.getItems();
-    //gsp::print(items);
-    gsp_engine.writeToFile();
+    std::vector<shared_ptr<gsp::IEngine>> engines;
 
-    gsp::HashEngineCpu hash_engine(data_base, min_support, num_of_work_group);
-    hash_engine.calculate();
-    auto hash_items = hash_engine.getItems();
-    //gsp::print(hash_items);
-    hash_engine.writeToFile();
+    engines.push_back(std::make_shared<gsp::GspEngineCpu>(data_base, min_support));
 
-    gsp::SPSPMEngineCpu simple_engine(data_base, min_support, num_of_work_group);
-    simple_engine.calculate();
-    auto simple_items = simple_engine.getItems();
-    //gsp::print(simple_items);
-    simple_engine.writeToFile();
+    engines.push_back(std::make_shared<gsp::HashEngineCpu>(data_base, min_support, num_of_work_group));
 
-    gsp::SPSPMEngineGpu gpu_simple_engine(data_base, min_support, num_of_work_group);
-    gpu_simple_engine.calculate();
-    auto gpu_simple_items = gpu_simple_engine.getItems();
-    //gsp::print(gpu_simple_items);
-    gpu_simple_engine.writeToFile();
+    engines.push_back(std::make_shared<gsp::SPSPMEngineCpu>(data_base, min_support, num_of_work_group));
 
-    gsp::HashEngineGpu gpu_hash_engine(data_base, min_support, num_of_work_group);
-    gpu_hash_engine.calculate();
-    auto gpu_hash_items = gpu_hash_engine.getItems();
-    //gsp::print(gpu_hash_items);
-    gpu_hash_engine.writeToFile();
+    engines.push_back(std::make_shared<gsp::SPSPMEngineGpu>(data_base, min_support, num_of_work_group));
 
+    engines.push_back(std::make_shared<gsp::HashEngineGpu>(data_base, min_support, num_of_work_group));
+
+    for(auto& engine : engines){
+        engine->calculate();
+        auto items = engine->getItems();
+        //gsp::print(hash_items);
+        engine->writeToFile();
+    }
 
     return 0;
 }

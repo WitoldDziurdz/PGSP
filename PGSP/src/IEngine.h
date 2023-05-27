@@ -7,6 +7,21 @@
 
 namespace gsp {
 
+    enum class GspType{
+        ClassicGsp,
+        SPSPMCpu,
+        SPSPMGpu,
+        HashGspCpu,
+        HashGspGpu,
+        All
+    };
+
+    enum class LogType {
+        Info,
+        Debug,
+        None
+    };
+
 	class IEngine {
 
 	public:

@@ -6,7 +6,6 @@
 #include "utils.h"
 #include "profile.h"
 namespace gsp {
-
     std::vector<gsp::item> convert(gsp::map_items frequent_items) {
         std::vector<gsp::item> result;
         result.reserve(frequent_items.size());
