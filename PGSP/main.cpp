@@ -47,6 +47,11 @@ int main(int, char**) {
     //gsp::print(simple_items);
     simple_engine.writeToFile();
 */
+    gsp::HashEngineCpu hash_engine(data_base, min_support, num_of_work_group);
+    hash_engine.calculate();
+    auto hash_items = hash_engine.getItems();
+    //gsp::print(hash_items);
+    hash_engine.writeToFile();
 
     gsp::SPSPMEngineGpu gpu_simple_engine(data_base, min_support, num_of_work_group);
     gpu_simple_engine.calculate();
@@ -54,7 +59,7 @@ int main(int, char**) {
     //gsp::print(gpu_simple_items);
     gpu_simple_engine.writeToFile();
 
-    gsp::HashEngineGpu gpu_hash_engine(data_base, min_support, num_of_work_group*5);
+    gsp::HashEngineGpu gpu_hash_engine(data_base, min_support, num_of_work_group);
     gpu_hash_engine.calculate();
     auto gpu_hash_items = gpu_hash_engine.getItems();
     //gsp::print(gpu_hash_items);

@@ -114,9 +114,9 @@ namespace gsp {
 
     size_t HashNode::getHash(ItemIteartor it, size_t k) {
         size_t sum = 0;
-        constexpr size_t offset = 8;
         for (size_t i = 0; i < k; ++i) {
-            sum += (static_cast<size_t>(*it) << offset);
+            sum = sum << 1;
+            sum += static_cast<size_t>(*it);
             ++it;
         }
         return sum;

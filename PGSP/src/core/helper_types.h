@@ -142,6 +142,7 @@ namespace gsp {
     };
     
 
+
     class FlatElement {
     public:
         FlatElement(std::string_view s) : data(s) {}
@@ -158,7 +159,7 @@ namespace gsp {
             }
 
             std::string_view operator*() const {
-                return delete_spaces(current_);
+                return current_;
             }
 
             bool operator==(const iterator& other) const {
@@ -170,6 +171,14 @@ namespace gsp {
             }
 
         private:
+            size_t find(std::string_view str_view, char ch) {
+                for (size_t i = 0; i < str_view.size(); ++i) {
+                    if (str_view[i] == ch) {
+                        return i;
+                    }
+                }
+                return std::string_view::npos;
+            }
 
             void update() {
                 if (!remaining_.empty()) {
@@ -200,16 +209,6 @@ namespace gsp {
             return iterator({});
         }
 
-        std::string_view getLastElement() {
-            size_t pos =rfind(data, ',');
-            if (pos != std::string_view::npos) {
-                auto str = std::string_view(data.data() + pos + 1, data.size() - pos - 1);
-                return delete_spaces(str);
-            } else {
-                return delete_spaces(data);
-            }
-        }
-
         size_t size() const {
             size_t count = 0;
             for (const auto& _ : *this) {
@@ -219,34 +218,7 @@ namespace gsp {
         }
 
 
-
     private:
-        static size_t find(std::string_view str_view, char ch) {
-            for (size_t i = 0; i < str_view.size(); ++i) {
-                if (str_view[i] == ch) {
-                    return i;
-                }
-            }
-            return std::string_view::npos;
-        }
-
-        static size_t rfind(std::string_view str_view, char ch) {
-            for (size_t i = str_view.size(); i > 0; --i) {
-                if (str_view[i - 1] == ch) {
-                    return i - 1;
-                }
-            }
-            return std::string_view::npos;
-        }
-
-        static std::string_view delete_spaces(std::string_view str){
-            auto sep_pos = find(str,' ');
-            if(sep_pos == std::string_view::npos){
-                return str;
-            }
-            return std::string_view(str.data(), sep_pos);
-        }
-
         std::string_view data;
     };
 
@@ -270,10 +242,6 @@ namespace gsp {
 
         size_t size() const {
             return rows_ * cols_ * string_size_;
-        }
-
-        size_t string_size() const{
-            return string_size_;
         }
 
     protected:
@@ -375,5 +343,29 @@ namespace gsp {
     private:
         size_t* row_sizes_;
         char* data_;
+    };
+
+    class StaticVector {
+    public:
+        StaticVector(size_t* data, size_t max_size) : data_(data), max_size_(max_size), size_(0) {}
+
+        void push_back(size_t element) {
+            if (size_ < max_size_) {
+                data_[size_++] = element;
+            }
+        }
+
+        size_t& operator[](size_t index) {
+            return data_[index];
+        }
+
+        void clear() {
+            size_ = 0;
+        }
+
+    private:
+        size_t* data_;
+        size_t max_size_;
+        size_t size_;
     };
 }
