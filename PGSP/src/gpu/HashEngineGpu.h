@@ -44,14 +44,15 @@ namespace gsp {
             size_t k = 1;
             auto frequent_items = iter_k1(queue, data_buffer, ids_buffer, inner_rows,  inner_cols, k);
             update(frequent_items);
-
+            std::cout << k << " frequent_items: " << frequent_items.size() << std::endl;
             k = 2;
             frequent_items = iter_k2(queue, data_buffer, ids_buffer, inner_rows,  inner_cols, convert(frequent_items), k);
             update(frequent_items);
-
+            std::cout << k << " frequent_items: " << frequent_items.size() << std::endl;
             k = 3;
             while (!frequent_items.empty()) {
                 frequent_items = iter_k(queue, data_buffer, ids_buffer, inner_rows,  inner_cols, convert(frequent_items), k);
+                std::cout << k << " frequent_items: " << frequent_items.size() << std::endl;
                 update(frequent_items);
                 k++;
             }
@@ -118,7 +119,7 @@ namespace gsp {
             sycl::buffer<char, 1> data_frequent_items_buffer(data_frequent_items.data(), data_frequent_items.size());
             sycl::buffer<size_t, 1> ids_frequent_items_buffer(ids_frequent_items.data(), ids_frequent_items.size());
             const size_t rows = num_of_work_group_;
-            const size_t cols = num_of_work_group_*inner_rows * inner_cols;
+            const size_t cols = inner_rows * inner_cols;
             size_t string_size = 2*k - 1;
             FlatArray flat_candidates(rows, cols, string_size);
 
@@ -127,7 +128,8 @@ namespace gsp {
             sycl::range<2> range_value(rows, cols);
             sycl::buffer<size_t, 2> nums_buffer(range_value);
 
-            sycl::buffer<char, 1> temp_candidate_buffer(string_size);
+            sycl::range<2> range_temp(rows, string_size);
+            sycl::buffer<char, 2> temp_candidate_buffer(range_temp);
 
             queue.submit([&](sycl::handler& cgh) {
                 sycl::accessor data_access{data_buffer, cgh, sycl::read_only};
@@ -163,13 +165,16 @@ namespace gsp {
                         for(size_t j = 0; j < gpu_frequent_items.size(); ++j) {
                             auto transaction2 = gpu_frequent_items[j];
                             char ch2 = transaction2[0];
+                            std::array<char, 3> tmp;
+
                             if(ch1 != ch2){
-                                gpu::merge(temp_candidate_accessor.get_pointer(), transaction1, ch2, flat_candidates.string_size());
-                                std::string_view temp_str1 = std::string_view(temp_candidate_accessor.get_pointer(), temp_candidate_accessor.size());
+                                gpu::merge(tmp.data(), transaction1, ch2, flat_candidates.string_size());
+                                std::string_view temp_str1 = std::string_view(temp_candidate_accessor.get_pointer(), flat_candidates.string_size());
+
                                 flat_candidates.insert(index, temp_str1);
                             }
-                            gpu::insert(temp_candidate_accessor.get_pointer(), transaction1, ch2, flat_candidates.string_size());
-                            std::string_view temp_str2 = std::string_view(temp_candidate_accessor.get_pointer(), temp_candidate_accessor.size());
+                            gpu::insert(tmp.data(), transaction1, ch2, flat_candidates.string_size());
+                            std::string_view temp_str2 = std::string_view(temp_candidate_accessor.get_pointer(), flat_candidates.string_size());
                             flat_candidates.insert(index, temp_str2);
                         }
                     }
@@ -198,7 +203,7 @@ namespace gsp {
             sycl::buffer<size_t, 1> ids_frequent_items_buffer(ids_frequent_items.data(), ids_frequent_items.size());
 
             const size_t rows = num_of_work_group_;
-            const size_t cols = num_of_work_group_ * num_of_work_group_*inner_rows * inner_cols;
+            const size_t cols = 20*inner_rows * inner_cols ;
             size_t string_size = 2*k - 1;
             FlatArray flat_candidates(rows, cols, string_size);
 
@@ -207,18 +212,19 @@ namespace gsp {
             sycl::range<2> range_value(rows, cols);
             sycl::buffer<size_t, 2> nums_buffer(range_value);
 
-            sycl::buffer<char, 1> temp_candidate_buffer(string_size);
+            sycl::range<2> range_temp(rows, string_size);
+            sycl::buffer<char, 2> temp_candidate_buffer(range_temp);
 
             queue.submit([&](sycl::handler& cgh) {
                 sycl::accessor data_access{data_buffer, cgh, sycl::read_only};
                 sycl::accessor ids_access{ids_buffer, cgh, sycl::read_only};
 
-                sycl::accessor data_frequent_items_access{data_frequent_items_buffer, cgh, sycl::read_write};
-                sycl::accessor ids_frequent_items_access{ids_frequent_items_buffer, cgh, sycl::read_write};
+                sycl::accessor data_frequent_items_access{data_frequent_items_buffer, cgh, sycl::read_only};
+                sycl::accessor ids_frequent_items_access{ids_frequent_items_buffer, cgh, sycl::read_only};
 
                 sycl::accessor data_candidates_accessor{data_candidates_buffer, cgh, sycl::read_write};
                 sycl::accessor ids_candidates_accessor{ids_candidates_buffer, cgh, sycl::read_write};
-                sycl::accessor nums{nums_buffer, cgh, sycl::read_write};
+                sycl::accessor nums{nums_buffer, cgh, sycl::write_only};
 
                 sycl::accessor temp_candidate_accessor{temp_candidate_buffer, cgh, sycl::read_write};
 
@@ -241,6 +247,7 @@ namespace gsp {
                         if(!gpu::isMine(h1, index, rows)){
                             continue;
                         }
+                        char *tmp = &temp_candidate_accessor[index][0];
                         for(size_t j = 0; j < gpu_frequent_items.size(); ++j) {
                             auto transaction2 = gpu_frequent_items[j];
                             std::string_view sub_transaction2 = std::string_view(transaction2.begin(), transaction2.size() - 1);
@@ -248,11 +255,11 @@ namespace gsp {
                             if((h1 == h2) && (gpu::isCanBeCandidate(sub_transaction1, sub_transaction2))) {
                                 char ch = transaction2.back();
 
-                                gpu::merge(temp_candidate_accessor.get_pointer(), transaction1, ch, flat_candidates.string_size());
+                                gpu::merge(tmp, transaction1, ch, flat_candidates.string_size());
                                 std::string_view temp_str1 = std::string_view(temp_candidate_accessor.get_pointer(), temp_candidate_accessor.size());
                                 flat_candidates.insert(index, temp_str1);
 
-                                gpu::insert(temp_candidate_accessor.get_pointer(), transaction1, ch, flat_candidates.string_size());
+                                gpu::insert(tmp, transaction1, ch, flat_candidates.string_size());
                                 std::string_view temp_str2 = std::string_view(temp_candidate_accessor.get_pointer(), temp_candidate_accessor.size());
                                 flat_candidates.insert(index, temp_str2);
                             }
@@ -287,7 +294,10 @@ namespace gsp {
                     }
                     size_t support = nums_accessor[row][col];
                     if(support >= min_support_) {
-                        candidates.insert({item, support});
+                        auto [it, status] = candidates.insert({item, support});
+                        if(!status){
+                            std::cout << "error: " << view << std::endl;
+                        }
                     }
                 }
             }

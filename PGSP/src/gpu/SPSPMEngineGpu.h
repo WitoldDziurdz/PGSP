@@ -57,6 +57,7 @@ namespace gsp {
                 update(frequent_items);
                 k++;
             }
+            queue.wait();
         }
     private:
 
@@ -158,7 +159,7 @@ namespace gsp {
                     auto candidate = gpu_candidates[index];
                     for(auto line : gpu_dataBase){
                         if(gsp::gpu::isSubSequence(line, candidate)){
-                            Accessor[index] = gpu::getCount(gpu_dataBase, candidate);
+                            Accessor[index]++;
                         }
                     }
                 });

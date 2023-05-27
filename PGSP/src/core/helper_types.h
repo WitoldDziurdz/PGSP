@@ -324,22 +324,20 @@ namespace gsp {
             return false;
         }
 
-        char* getEntry(size_t row){
-            size_t current_col = row_sizes_[row];
-            row_sizes_[row]++;
-            char* target = &data_[getOffset(row, current_col)];
-            return target;
-        }
-
         bool find(size_t row, std::string_view str){
             size_t current_size = row_sizes_[row];
             for(size_t col = 0; col < current_size; ++col){
-                std::string_view source = get(row, col);
+                std::string_view source = get_base(row, col);
                 if(source == str){
                     return true;
                 }
             }
             return false;
+        }
+
+        std::string_view get_base(size_t row, size_t col) {
+            const char* source = &data_[getOffset(row, col)];
+            return std::string_view(source, string_size_);
         }
 
         std::string_view get(size_t row, size_t col) {
