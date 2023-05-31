@@ -21,18 +21,17 @@ namespace gsp {
     class SPSPMEngineGpu : public IEngine {
 
     public:
-        SPSPMEngineGpu(const std::vector<gsp::item>& data_base, size_t min_support, size_t num_of_work_group): 
-            IEngine("Simply Partitioned Sequential Pattern Mining GPU", data_base, min_support),
+        SPSPMEngineGpu(const std::vector<gsp::item>& data_base, size_t min_support, size_t num_of_work_group, bool info_logs = false, bool debug_logs = false):
+            IEngine("Simply Partitioned Sequential Pattern Mining GPU", data_base, min_support, info_logs, debug_logs),
             num_of_work_group_{ num_of_work_group } { 
 
         }
 
         void calculate() override {
-            TotalDuration timer(name_ + " - total time speneded on calculating:");
             sycl::queue queue(sycl::default_selector_v);
-            std::cout << "Running on " << queue.get_device().get_info<sycl::info::device::name>() << "\n";;
+            TotalDuration timer(name_  + " " + queue.get_device().get_info<sycl::info::device::name>()
+                                + " - total time spent on calculating:" );
 
-            //TO DO remove
             auto flat_data_base = convert(data_base_);
             std::string_view data = flat_data_base.first;
             std::span<size_t> ids(flat_data_base.second.data(), flat_data_base.second.size());
@@ -42,20 +41,26 @@ namespace gsp {
             size_t k = 1;
             auto candidates = generate_size_1_candidates( data_base_);
             auto frequent_items = gpu::getFrequentItems(queue, data_buffer, ids_buffer, candidates, min_support_);
-            std::cout << k << " frequent_items: " << frequent_items.size() << std::endl;
+            if(info_logs_) {
+                std::cout << k << " frequent_items: " << frequent_items.size() << std::endl;
+            }
             update(frequent_items);
 
             k = 2;
             candidates = generate_size_2_candidates(frequent_items);
             frequent_items = gpu::getFrequentItems(queue, data_buffer, ids_buffer, candidates,min_support_);
-            std::cout << k << " frequent_items: " << frequent_items.size() << std::endl;
+            if(info_logs_) {
+                std::cout << k << " frequent_items: " << frequent_items.size() << std::endl;
+            }
             update(frequent_items);
 
             k = 3;
             while (!frequent_items.empty()) {
                 candidates = generate_size_k_candidates(frequent_items, k);
                 frequent_items = gpu::getFrequentItems(queue, data_buffer, ids_buffer, candidates, min_support_);
-                std::cout << k << " frequent_items: " << frequent_items.size() << std::endl;
+                if(info_logs_) {
+                    std::cout << k << " frequent_items: " << frequent_items.size() << std::endl;
+                }
                 update(frequent_items);
                 k++;
             }

@@ -12,7 +12,7 @@ namespace gsp {
 	class HashEngineCpu : public IEngine{
 
 	public:
-        HashEngineCpu(const std::vector<gsp::item>& data_base, size_t min_support, size_t num_of_work_group);
+        HashEngineCpu(const std::vector<gsp::item>& data_base, size_t min_support, size_t num_of_work_group, bool info_logs = false, bool debug_logs = false);
 
         void calculate() override;
 

@@ -7,6 +7,8 @@
 #include <iostream>
 #include <algorithm>
 #include <array>
+#include <sstream>
+
 #include <sycl/sycl.hpp>
 
 #include "../core/utils.h"
@@ -21,8 +23,8 @@ namespace gsp {
     class HashEngineGpu : public IEngine {
 
     public:
-        HashEngineGpu(const std::vector<gsp::item>& data_base, size_t min_support, size_t num_of_work_group):
-                IEngine("Hash Partitioned Sequential Pattern Mining GPU", data_base, min_support),
+        HashEngineGpu(const std::vector<gsp::item>& data_base, size_t min_support, size_t num_of_work_group, bool info_logs = false, bool debug_logs = false):
+                IEngine("Hash Partitioned Sequential Pattern Mining GPU", data_base, min_support, info_logs, debug_logs),
                 num_of_work_group_{ num_of_work_group } {
             for (size_t i = 0; i < num_of_work_group_; ++i) {
                 nodes_.emplace_back(data_base, i, min_support, num_of_work_group);
@@ -30,9 +32,9 @@ namespace gsp {
         }
 
         void calculate() override {
-            TotalDuration timer(name_ + " - total time speneded on calculating:");
             sycl::queue queue(sycl::default_selector_v);
-            std::cout << "Running on " << queue.get_device().get_info<sycl::info::device::name>() << "\n";;
+            TotalDuration timer(name_  + " " + queue.get_device().get_info<sycl::info::device::name>()
+                    + " - total time spent on calculating:" );
 
             auto flat_data_base = convert(data_base_);
             std::string_view data = flat_data_base.first;
@@ -43,15 +45,21 @@ namespace gsp {
             size_t k = 1;
             auto frequent_items = iter_k1(queue, data_buffer, ids_buffer, k);
             update(frequent_items);
-            std::cout << k << " frequent_items: " << frequent_items.size() << std::endl;
+            if(info_logs_) {
+                std::cout << k << " frequent_items: " << frequent_items.size() << std::endl;
+            }
             k = 2;
             frequent_items = iter_k2(queue, data_buffer, ids_buffer, convert(frequent_items), k);
             update(frequent_items);
-            std::cout << k << " frequent_items: " << frequent_items.size() << std::endl;
+            if(info_logs_) {
+                std::cout << k << " frequent_items: " << frequent_items.size() << std::endl;
+            }
             k = 3;
             while (!frequent_items.empty()) {
                 frequent_items = iter_k(queue, data_buffer, ids_buffer, convert(frequent_items), k);
-                std::cout << k << " frequent_items: " << frequent_items.size() << std::endl;
+                if(info_logs_) {
+                    std::cout << k << " frequent_items: " << frequent_items.size() << std::endl;
+                }
                 update(frequent_items);
                 k++;
             }
