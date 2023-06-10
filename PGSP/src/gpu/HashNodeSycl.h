@@ -20,34 +20,27 @@ namespace gsp {
                 max_number_of_nodes_{ max_number_of_nodes } {
         }
 
-        map_items iter_1( sycl::queue& queue,
+        std::vector<gsp::item> iter_1( sycl::queue& queue,
                           sycl::buffer<char, 1>& data_buffer,
                           sycl::buffer<size_t, 1>& ids_buffer) {
             auto candidates = generate_size_1_candidates(data_base_);
             auto frequent_items = gpu::getFrequentItems(queue, data_buffer, ids_buffer, candidates, min_support_);
-            filter(frequent_items, min_support_);
-            return frequent_items;
+            return generate_size_1_candidates(data_base_);
         }
 
-		map_items iter_2(sycl::queue& queue,
+        std::vector<gsp::item> iter_2(sycl::queue& queue,
                          sycl::buffer<char, 1>& data_buffer,
                          sycl::buffer<size_t, 1>& ids_buffer,
                          const std::vector<gsp::item>& frequent_items){
-            auto candidates = generate_size_2_candidates(frequent_items);
-            auto items = gpu::getFrequentItems(queue, data_buffer, ids_buffer, candidates, min_support_);
-            filter(items, min_support_);
-            return items;
+            return generate_size_2_candidates(frequent_items);
         }
 
-        map_items iter_k(sycl::queue& queue,
+        std::vector<gsp::item> iter_k(sycl::queue& queue,
                          sycl::buffer<char, 1>& data_buffer,
                          sycl::buffer<size_t, 1>& ids_buffer,
                          const std::vector<gsp::item>& frequent_items,
                          sycl::host_accessor<std::pair<size_t, size_t>, 1, sycl::access::mode::read>& buffer_accessor, size_t k){
-            auto candidates = generate_size_k_candidates(frequent_items, buffer_accessor, k);
-            auto items = gpu::getFrequentItems(queue, data_buffer, ids_buffer, candidates, min_support_);
-            filter(items, min_support_);
-            return items;
+            return generate_size_k_candidates(frequent_items, buffer_accessor, k);;
         }
 
 	private:

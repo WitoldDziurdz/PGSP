@@ -67,16 +67,18 @@ namespace gsp {
 
     private:
         inline map_items iter_k1(sycl::queue& queue, sycl::buffer<char, 1>& data_buffer, sycl::buffer<size_t, 1>& ids_buffer, size_t k) {
-            auto frequentItems = asyncIterateAndCollect([&](HashNodeSycl& node) {
+            auto candidates = asyncIterateAndCollect([&](HashNodeSycl& node) {
                 return node.iter_1(queue, data_buffer, ids_buffer);
             });
+            auto frequentItems = gpu::getFrequentItems(queue, data_buffer, ids_buffer, candidates, min_support_);
             return frequentItems;
         }
 
         inline map_items iter_k2(sycl::queue& queue, sycl::buffer<char, 1>& data_buffer, sycl::buffer<size_t, 1>& ids_buffer, const std::vector<gsp::item>& frequent_items, size_t k) {
-            auto frequentItems = asyncIterateAndCollect([&](HashNodeSycl& node) {
+            auto candidates = asyncIterateAndCollect([&](HashNodeSycl& node) {
                 return node.iter_2(queue, data_buffer, ids_buffer, frequent_items);
             });
+            auto frequentItems = gpu::getFrequentItems(queue, data_buffer, ids_buffer, candidates, min_support_);
             return frequentItems;
         }
 
@@ -108,24 +110,25 @@ namespace gsp {
                 });
             });
             sycl::host_accessor nums_hashes_host_accessor{nums_hashes_buffer, sycl::read_only};
-            auto frequentItems = asyncIterateAndCollect([&](HashNodeSycl& node) {
+            auto candidates = asyncIterateAndCollect([&](HashNodeSycl& node) {
                 return node.iter_k(queue, data_buffer, ids_buffer, frequent_items, nums_hashes_host_accessor, k);
             });
+            auto frequentItems = gpu::getFrequentItems(queue, data_buffer, ids_buffer, candidates, min_support_);
             return frequentItems;
         }
 
 
         template<typename Func>
-        map_items asyncIterateAndCollect(Func&& f) {
-            std::vector<std::future<map_items>> futures;
+        std::vector<gsp::item> asyncIterateAndCollect(Func&& f) {
+            std::vector<std::future<std::vector<gsp::item>>> futures;
             for (auto& node : nodes_) {
                 futures.push_back(std::async(std::launch::async, f, std::ref(node)));
             }
 
-            map_items collectedItems;
+            std::vector<gsp::item> collectedItems;
             for (auto& future : futures) {
                 auto fItem = future.get();
-                collectedItems.insert(std::make_move_iterator(fItem.begin()), std::make_move_iterator(fItem.end()));
+                collectedItems.insert(collectedItems.end(), std::make_move_iterator(fItem.begin()), std::make_move_iterator(fItem.end()));
             }
 
             return collectedItems;
