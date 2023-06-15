@@ -9,15 +9,15 @@
 #include <algorithm>
 #include <future>
 
-#include "utils.h"
+#include "../core/utils.h"
 #include "SimpleNode.h"
-#include "IEngine.h"
+#include "../IEngine.h"
 
 namespace gsp {
     class SPSPMEngineCpu : public IEngine {
 
     public:
-        SPSPMEngineCpu(const std::vector<gsp::item>& data_base, size_t min_support, size_t num_of_work_group);
+        SPSPMEngineCpu(const std::vector<gsp::item>& data_base, size_t min_support, size_t num_of_work_group, bool info_logs = false, bool debug_logs = false);
 
         void calculate() override;
     private:

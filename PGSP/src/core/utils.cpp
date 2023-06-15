@@ -4,6 +4,8 @@
 #include <unordered_map>
 #include <string_view>
 
+#include "profile.h"
+
 namespace gsp {
 
 	bool isContain(const std::string_view item, const std::string_view sub_item) {
@@ -30,14 +32,6 @@ namespace gsp {
 		return false;
 	}
 
-	std::set<char> gsp::getUniqItems(const std::vector<std::string>& sequence) {
-		std::set<char> result;
-		for (const std::string& item : sequence) {
-			result.insert(item.begin(), item.end());
-		}
-		return result;
-	}
-
     std::vector<std::vector<gsp::item>> split(std::vector<gsp::item> items, size_t num_of_work_group) {
         if (num_of_work_group == 0) {
             throw std::invalid_argument("Number of work groups must be greater than 0");
@@ -52,16 +46,6 @@ namespace gsp {
 
         return result;
     }
-
-	std::set<char> generateUniqItems(const std::vector<gsp::item>& data_base) {
-		std::set<char> uniq_items;
-		for (const auto& items : data_base) {
-			for (const auto& item : items) {
-				uniq_items.insert(item.cbegin(), item.cend());
-			}
-		}
-		return uniq_items;
-	}
 
     std::vector<gsp::item> generate_size_1_candidates(const std::vector<gsp::item>& database) {
         std::set<gsp::item> candidates;
@@ -116,29 +100,17 @@ namespace gsp {
         return result;
     }
 
-    bool isCanBeCandidate(const gsp::item& first, const gsp::item& second) {
-        auto len1 = std::accumulate(first.begin(), first.end(), 0, [](size_t acc, const auto& s) {
-            return acc + s.size();
-        });
-        auto len2 = std::accumulate(second.begin(), second.end(), 0, [](size_t acc, const auto& s) {
-            return acc + s.size();
-        });
-
-        if (len1 != len2) {
-            return false;
-        }
-
+    bool isCanBeCandidate(const gsp::item& first, const gsp::item& second, size_t len) {
         ItemIteartor it1(first);
         ItemIteartor it2(second);
         ++it1;
-        for (size_t i = 1; i < len1; ++i) {
+        for (size_t i = 1; i < len-1; ++i) {
             if ((*it1) != (*it2)) {
                 return false;
             }
             ++it1;
             ++it2;
         }
-
         return true;
     }
 
@@ -162,7 +134,7 @@ namespace gsp {
             const auto& element1 = pr1.first;
              for (const auto& pr2 : frequent_items) {
                     const auto& element2 = pr2.first;
-                    if (isCanBeCandidate(element1, element2)) {
+                    if (isCanBeCandidate(element1, element2, k-1)) {
                         gsp::item candidate = element1;
                         auto pr = element2.back().back();
                         if (needMerge(element1, element2)) {

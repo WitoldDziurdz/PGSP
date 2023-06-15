@@ -3,14 +3,25 @@
 #include <vector>
 #include <unordered_map>
 
-#include "utils.h"
+#include "core/utils.h"
 
 namespace gsp {
+
+    enum class GspType{
+        ClassicGsp,
+        SPSPMCpu,
+        SPSPMGpu,
+        HashGspCpu,
+        HashGspGpu,
+        All
+    };
 
 	class IEngine {
 
 	public:
-		IEngine(const std::string& name, const std::vector<gsp::item>& data_base, size_t min_support) : name_{name}, data_base_ { data_base }, min_support_{ min_support } {
+		IEngine(const std::string& name, const std::vector<gsp::item>& data_base, size_t min_support,
+                bool info_logs, bool debug_logs) :
+                name_{name}, data_base_ { data_base }, min_support_{ min_support }, info_logs_{ info_logs }, debug_logs_ { debug_logs } {
 		}
 
 		virtual void calculate() = 0;
@@ -30,7 +41,9 @@ namespace gsp {
 		}
 
 		std::vector<std::pair<gsp::item, size_t>> getItems() {
-			return frequent_items_;
+            std::vector<std::pair<gsp::item, size_t>> items(frequent_items_.begin(), frequent_items_.end());
+            std::sort(items.begin(), items.end());
+			return items;
 		};
 
 		std::string getFileName() {
@@ -74,6 +87,8 @@ namespace gsp {
 		const std::string name_;
 		const std::vector<gsp::item>& data_base_;
 		size_t min_support_;
+        const bool info_logs_;
+        const bool debug_logs_;
 		std::vector<std::pair<gsp::item, size_t>> frequent_items_;
 	};
 }

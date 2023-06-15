@@ -9,7 +9,7 @@
 #include <fstream>
 #include <unordered_map>
 
-#include "HelperTypes.h"
+#include "helper_types.h"
 
 namespace gsp {
 
@@ -17,11 +17,7 @@ namespace gsp {
 
     bool isSubSequence(const std::vector<std::string>& seq, const std::vector<std::string>& sub_seq);
 
-    std::set<char> getUniqItems(const std::vector<std::string>& sequence);
-
     std::vector<std::vector<item>> split(std::vector<gsp::item> items, size_t num_of_work_group);
-
-    std::set<char> generateUniqItems(const std::vector<gsp::item>& data_base);
 
     std::vector<gsp::item> generate_size_1_candidates(const std::vector<gsp::item>& database);
 
@@ -29,7 +25,7 @@ namespace gsp {
 
     std::string flatItem(const gsp::item& element);
 
-    bool isCanBeCandidate(const gsp::item& first, const gsp::item& second);
+    bool isCanBeCandidate(const gsp::item& first, const gsp::item& second, size_t len);
 
     bool needMerge(const gsp::item& element1, const gsp::item& element2);
 

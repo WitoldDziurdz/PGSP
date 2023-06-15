@@ -3,12 +3,12 @@
 #include <string>
 #include <map>
 #include "SimpleNode.h"
-#include "profile.h"
+#include "../core/profile.h"
 
 namespace gsp {
 
-    SPSPMEngineCpu::SPSPMEngineCpu(const std::vector<gsp::item>& data_base, size_t min_support, size_t num_of_work_group) : 
-        IEngine("Simply Partitioned Sequential Pattern Mining CPU", data_base, min_support),
+    SPSPMEngineCpu::SPSPMEngineCpu(const std::vector<gsp::item>& data_base, size_t min_support, size_t num_of_work_group, bool info_logs, bool debug_logs) :
+        IEngine("Simply Partitioned Sequential Pattern Mining CPU", data_base, min_support, info_logs, debug_logs ),
         num_of_work_group_{ num_of_work_group } {
         for (size_t i = 0; i < num_of_work_group_; ++i) {
             nodes_.emplace_back(data_base, min_support);
@@ -16,22 +16,33 @@ namespace gsp {
     }
 
     void SPSPMEngineCpu::calculate() {
-        TotalDuration timer(name_ + " - total time speneded on calculating:");
+        TotalDuration timer(name_ + " AMD Ryzen 5 3600X 6-Core Processor - total time spent on calculating:");
+        size_t k = 1;
         auto candidates = generate_size_1_candidates(data_base_);
         auto items = gsp::split(std::move(candidates), nodes_.size());
         auto frequent_items = calculateFrequentItemsAsync(items);
+        if(info_logs_) {
+            std::cout << k << " frequent_items: " << frequent_items.size() << std::endl;
+        }
         update(frequent_items);
 
+        k = 2;
         candidates = generate_size_2_candidates(frequent_items);
         items = gsp::split(std::move(candidates), nodes_.size());
         frequent_items = calculateFrequentItemsAsync(items);
+        if(info_logs_) {
+            std::cout << k << " frequent_items: " << frequent_items.size() << std::endl;
+        }
         update(frequent_items);
 
-        size_t k = 3;
+        k = 3;
         while (!frequent_items.empty()) {
             candidates = generate_size_k_candidates(frequent_items, k);
             items = gsp::split(std::move(candidates), nodes_.size());
             frequent_items = calculateFrequentItemsAsync(items);
+            if(info_logs_) {
+                std::cout << k << " frequent_items: " << frequent_items.size() << std::endl;
+            }
             update(frequent_items);
             k++;
         }

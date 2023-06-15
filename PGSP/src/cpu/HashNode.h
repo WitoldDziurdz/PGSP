@@ -3,7 +3,7 @@
 #include <vector>
 #include <unordered_map>
 
-#include "utils.h"
+#include "../core/utils.h"
 
 namespace gsp {
 
@@ -27,11 +27,11 @@ namespace gsp {
 
 		std::vector<gsp::item> generate_size_k_candidates(const map_items& frequent_items, size_t k);
 
+        bool isMine(size_t h);
+        size_t getHash(ItemIteartor it, size_t k);
 		bool isMine(char ch);
 
 		bool isMine(const std::string& str);
-
-		std::vector<size_t> getIds(const std::string& str);
 
 		size_t getId(char ch);
 
