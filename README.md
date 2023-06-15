@@ -30,7 +30,7 @@ You can run the program with the following command:
 Here's an example of how to use the program:
 
 ```bash
-./gsp --min 0.1 --data mydata.txt --gsp --print
+./cuda --min 0.1 --data mydata.txt --gsp --print
 ```
 This command will run the classic GSP engine with a minimum support value of 0.1, using the data in the mydata.txt file, and print the result to the console.
 
