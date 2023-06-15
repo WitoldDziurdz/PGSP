@@ -25,6 +25,12 @@
     <Filter Include="Header Files\utils">
       <UniqueIdentifier>{2a1ba5db-73b0-4109-a72a-541e63fc60ca}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\gpu">
+      <UniqueIdentifier>{ea0f3330-6f1a-4ecb-9a1c-6db66868dc7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gpu">
+      <UniqueIdentifier>{a171fce8-1f39-4309-8fb3-a6521f1131f3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -87,6 +93,18 @@
       <Filter>Header Files\cpu</Filter>
     </ClInclude>
     <ClInclude Include="profile.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="DataParser.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="HelperTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SPSPMEngineGpu.h">
+      <Filter>Header Files\gpu</Filter>
+    </ClInclude>
+    <ClInclude Include="sycl_utiils.h">
       <Filter>Header Files\utils</Filter>
     </ClInclude>
   </ItemGroup>
