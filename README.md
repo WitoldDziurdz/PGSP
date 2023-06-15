@@ -4,7 +4,7 @@ This is a parallel implementation of the Generalized Sequential Pattern (GSP) al
 
 ## Building
 
-This project uses C++20 and requires a compiler that supports this version of the language. The PDC++ compiler is required to compile SYCL. A tutorial on how to install and compile a SYCL project can be found [here](URL_to_your_tutorial).
+This project uses C++20 and requires a compiler that supports this version of the language. The DPC++ compiler is required to compile SYCL. A tutorial on how to install and compile a SYCL project can be found [here]([URL_to_your_tutorial](https://intel.github.io/llvm-docs/GetStartedGuide.html)).
 
 ## Usage
 
