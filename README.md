@@ -1,16 +1,17 @@
-Parallel GSP Engines
+# Parallel GSP Engines
+
 This is a parallel implementation of the Generalized Sequential Pattern (GSP) algorithm. This program allows you to run different types of GSP engines (Classic, SPSPM, and Hash engines) on both CPU and GPU to find frequent sequences in a given dataset.
 
-Building
-This project uses C++20 and requires a compiler that supports this version of the language. The PDC++ compiler is required to compile SYCL. A tutorial on how to install and compile a SYCL project can be found here.
+## Building
 
-Usage
+This project uses C++20 and requires a compiler that supports this version of the language. The PDC++ compiler is required to compile SYCL. A tutorial on how to install and compile a SYCL project can be found [here](URL_to_your_tutorial).
+
+## Usage
+
 You can run the program with the following command:
 
-bash
-Copy code
+```bash
 ./cuda [options]
-Here are the options you can use:
 
 --info : Enable info logs.
 --debug : Enable debug logs.
@@ -24,13 +25,14 @@ Here are the options you can use:
 --sgsp_gpu : Use the SPSPM engine on the GPU.
 --hgsp_gpu : Use the Hash engine on the GPU.
 --all : Use all engines. This is the default option if no engine is specified.
-Example
+```
+##  Example
 Here's an example of how to use the program:
 
-bash
-Copy code
+```bash
 ./gsp --min 0.1 --data mydata.txt --gsp --print
+```
 This command will run the classic GSP engine with a minimum support value of 0.1, using the data in the mydata.txt file, and print the result to the console.
 
-Contact
+## Contact
 For any issues or suggestions, please contact the author.
